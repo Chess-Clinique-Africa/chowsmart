@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   ChefHat,
   MapPin,
   Menu,
+  Mic,
   Sparkles,
   Wheat,
   X,
@@ -43,6 +44,10 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const { user, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const onMenuStudio = pathname.startsWith('/menu-studio');
+  const ctaLabel = onMenuStudio ? 'Talk to ChowSmart' : 'Plan a menu';
+  const CtaIcon = onMenuStudio ? Mic : Sparkles;
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
@@ -73,10 +78,23 @@ export function Navbar() {
         </nav>
 
         <div className="app-nav-actions">
-          <Link to="/menu-studio" className="app-quick-action">
-            <Sparkles size={17} aria-hidden />
-            Plan a menu
-          </Link>
+          {onMenuStudio ? (
+            <button
+              type="button"
+              className="app-quick-action"
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('chowsmart:open-talk'));
+              }}
+            >
+              <CtaIcon size={17} aria-hidden />
+              {ctaLabel}
+            </button>
+          ) : (
+            <Link to="/menu-studio" className="app-quick-action">
+              <CtaIcon size={17} aria-hidden />
+              {ctaLabel}
+            </Link>
+          )}
           <button
             type="button"
             className="app-mobile-menu"
@@ -141,15 +159,30 @@ export function Navbar() {
                 Log in
               </NavLink>
             )}
-            <Link
-              to="/menu-studio"
-              className="app-quick-action"
-              style={{ marginTop: 12 }}
-              onClick={() => setOpen(false)}
-            >
-              <Sparkles size={17} aria-hidden />
-              Plan a menu
-            </Link>
+            {onMenuStudio ? (
+              <button
+                type="button"
+                className="app-quick-action"
+                style={{ marginTop: 12 }}
+                onClick={() => {
+                  setOpen(false);
+                  window.dispatchEvent(new CustomEvent('chowsmart:open-talk'));
+                }}
+              >
+                <CtaIcon size={17} aria-hidden />
+                {ctaLabel}
+              </button>
+            ) : (
+              <Link
+                to="/menu-studio"
+                className="app-quick-action"
+                style={{ marginTop: 12 }}
+                onClick={() => setOpen(false)}
+              >
+                <CtaIcon size={17} aria-hidden />
+                {ctaLabel}
+              </Link>
+            )}
           </div>
         </div>
       ) : null}

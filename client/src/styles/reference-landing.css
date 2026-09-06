@@ -399,25 +399,67 @@
   color: #7a8971;
   border-top: 1px solid #e0e7db;
   justify-content: space-between;
+  align-items: center;
+  gap: 24px;
   max-width: none;
-  padding: 25px 5%;
+  width: 100%;
+  margin-top: auto;
+  padding: 22px max(24px, 5%);
   font-size: 12px;
   display: flex;
+  flex-shrink: 0;
   background: #fff;
+  position: relative;
+  z-index: 1;
 }
 
-.cs-footer > div {
-  gap: 20px;
-  display: flex;
+.cs-footer-brand {
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.cs-footer-brand .chowsmart-identity > img {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.cs-footer-brand .identity-name {
+  font-size: 20px;
+}
+
+.cs-footer-brand small {
+  font-size: 10px !important;
+  margin-top: 3px !important;
+}
+
+.cs-footer-tagline {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+  color: #8a968c;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.cs-footer-about {
+  flex-shrink: 0;
+  color: #3f4f45 !important;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  white-space: nowrap;
+}
+
+.cs-footer-about:hover {
+  color: #087f5b !important;
 }
 
 .cs-footer a {
   color: inherit;
   text-decoration: none;
-}
-
-.cs-footer a:hover {
-  color: #087f5b;
 }
 
 .chowsmart-identity {
@@ -543,6 +585,8 @@ html .app-quick-action {
   display: flex;
   color: #fff !important;
   text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 html .app-quick-action:hover {
@@ -787,7 +831,11 @@ html .app-skip:focus {
   }
   .cs-footer {
     flex-direction: column;
-    gap: 15px;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .cs-footer-tagline {
+    text-align: left;
   }
   .cs-lead {
     font-size: 17px;

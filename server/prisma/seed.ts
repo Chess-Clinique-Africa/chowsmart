@@ -40,11 +40,11 @@ const IMG = {
     dessert: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&q=80",
     noodles: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&q=80",
     curry: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&q=80",
-    bread: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&q=80",
-    baguette: "https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=800&q=80",
-    honeyBread: "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=800&q=80",
-    chocolateBread: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=800&q=80",
-    coconutBread: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&q=80",
+    bread: "/breads/wrapped-studio.png",
+    baguette: "/breads/wheat-studio.png",
+    honeyBread: "/breads/honey-studio.png",
+    chocolateBread: "/breads/chocolate-studio.png",
+    coconutBread: "/breads/coconut-studio.png",
   },
 };
 

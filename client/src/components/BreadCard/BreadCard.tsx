@@ -2,15 +2,24 @@ import { Link } from 'react-router-dom';
 import { Image } from '@/components/UI/Image';
 import type { Bread } from '@/types';
 
+const STUDIO_IMAGES: Record<string, string> = {
+  'wheat-baguette-bread': '/breads/wheat-studio.png',
+  'wrapped-baguette-bread': '/breads/wrapped-studio.png',
+  'honey-creamed-bread': '/breads/honey-studio.png',
+  'chocolate-creamed-bread': '/breads/chocolate-studio.png',
+  'coconut-creamed-bread': '/breads/coconut-studio.png',
+};
+
 export function BreadCard({ bread }: { bread: Bread }) {
   const num = String(bread.number).padStart(2, '0');
+  const image = STUDIO_IMAGES[bread.slug] || bread.image;
   return (
     <Link
       to={`/breads/${bread.slug}`}
       className="relative flex min-h-[300px] min-w-[230px] max-w-[260px] snap-start flex-col justify-end overflow-hidden rounded-[1.35rem] bg-[#eceeea] p-5 transition hover:-translate-y-1"
     >
       <div className="absolute inset-0">
-        <Image src={bread.image} alt={bread.name} aspect="aspect-auto h-full" className="h-full" />
+        <Image src={image} alt={bread.name} aspect="aspect-auto h-full" className="h-full" />
         <div className="absolute inset-0 bg-gradient-to-t from-accent/88 via-accent/30 to-transparent" />
       </div>
       <span className="absolute right-4 top-3 text-3xl font-extrabold tracking-tight text-white/20">

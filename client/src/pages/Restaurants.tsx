@@ -1,45 +1,83 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  ArrowRight,
+  BookOpen,
+  Check,
+  MapPin,
+  Search,
+  Sparkles,
+} from 'lucide-react';
 import { RestaurantCard } from '@/components/RestaurantCard/RestaurantCard';
-import { SearchBar } from '@/components/SearchBar/SearchBar';
-import { FilterPanel } from '@/components/FilterPanel/FilterPanel';
-import { Skeleton } from '@/components/UI/Skeleton';
-import { EmptyState } from '@/components/UI/EmptyState';
-import { ErrorState } from '@/components/UI/ErrorState';
-import { Button } from '@/components/UI/Button';
 import { restaurantsService } from '@/services/restaurants';
-import { useFavorites } from '@/hooks/useFavorites';
-import { useAuth } from '@/context/AuthContext';
 import type { Restaurant } from '@/types';
+
+const REGIONS = [
+  { label: 'All regions', value: '' },
+  { label: 'Nigeria', value: 'Nigeria' },
+  { label: 'Africa', value: 'Africa' },
+  { label: 'EMEA', value: 'EMEA' },
+];
+
+const CITIES = [
+  { label: 'All cities', value: '' },
+  { label: 'Lagos', value: 'Lagos' },
+  { label: 'Abuja', value: 'Abuja' },
+  { label: 'Port Harcourt', value: 'Port Harcourt' },
+  { label: 'Ibadan', value: 'Ibadan' },
+  { label: 'Kano', value: 'Kano' },
+];
+
+const DIETS = [
+  { label: 'Any preference', value: '' },
+  { label: 'Halal', value: 'halal' },
+  { label: 'Vegetarian', value: 'vegetarian' },
+  { label: 'Vegan', value: 'vegan' },
+  { label: 'Gluten-free', value: 'gluten' },
+];
+
+type SourceTab = 'official' | 'local';
+
+function matchesDiet(restaurant: Restaurant, diet: string) {
+  if (!diet) return true;
+  if (diet === 'halal') return true;
+  const items = restaurant.menuItems ?? [];
+  if (!items.length) return true;
+  if (diet === 'gluten') {
+    return items.some((item) => !item.allergens.some((a) => /gluten|wheat/i.test(a)));
+  }
+  if (diet === 'vegetarian' || diet === 'vegan') {
+    return items.some(
+      (item) => !item.allergens.some((a) => /meat|fish|shellfish|egg|dairy|milk/i.test(a))
+    );
+  }
+  return true;
+}
 
 export function Restaurants() {
   const [items, setItems] = useState<Restaurant[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [search, setSearch] = useState('');
-  const [filters, setFilters] = useState({ cuisine: '', city: '', price: '', rating: '' });
+  const [total, setTotal] = useState(0);
+  const [region, setRegion] = useState('Nigeria');
+  const [city, setCity] = useState('');
+  const [query, setQuery] = useState('');
+  const [draftQuery, setDraftQuery] = useState('');
+  const [diet, setDiet] = useState('');
+  const [tab, setTab] = useState<SourceTab>('official');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { isFavorite, toggleFavorite } = useFavorites('RESTAURANT');
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
 
-  async function load(nextPage = page) {
+  async function load() {
     setLoading(true);
     setError('');
     try {
       const data = await restaurantsService.list({
-        page: nextPage,
-        limit: 9,
-        search: search || undefined,
-        cuisine: filters.cuisine || undefined,
-        city: filters.city || undefined,
-        price: filters.price || undefined,
-        rating: filters.rating ? Number(filters.rating) : undefined,
+        page: 1,
+        limit: 50,
+        search: query || undefined,
+        city: city || undefined,
       });
       setItems(data.items);
-      setTotalPages(data.meta.totalPages);
-      setPage(data.meta.page);
+      setTotal(data.meta.total);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load restaurants');
     } finally {
@@ -48,126 +86,234 @@ export function Restaurants() {
   }
 
   useEffect(() => {
-    void load(1);
+    void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, filters.cuisine, filters.city, filters.price, filters.rating]);
+  }, [query, city]);
+
+  const filtered = useMemo(() => {
+    return items.filter((restaurant) => {
+      if (region && region !== 'Africa' && region !== 'EMEA') {
+        if (restaurant.country.toLowerCase() !== region.toLowerCase()) return false;
+      }
+      if (tab === 'local' && restaurant.website) return false;
+      if (!matchesDiet(restaurant, diet)) return false;
+      return true;
+    });
+  }, [items, region, tab, diet]);
+
+  const profileCount = useMemo(() => items.length, [items]);
+
+  const activeFilters = [region, city].filter(Boolean);
+  const checkedLabel = new Date().toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+
+  function clearFilters() {
+    setRegion('Nigeria');
+    setCity('');
+    setQuery('');
+    setDraftQuery('');
+    setDiet('');
+  }
+
+  function suggestFood() {
+    setQuery(draftQuery.trim());
+  }
 
   return (
-    <section className="page-shell py-12">
-      <div className="mb-8 max-w-2xl">
-        <p className="text-xs uppercase tracking-[0.18em] text-muted">Restaurants</p>
-        <h1 className="mt-2 font-extrabold tracking-tight text-4xl">Find a place that serves ChowSmart well.</h1>
-        <p className="mt-3 text-muted">
-          Search by cuisine, city, price and rating across Nigeria and beyond.
-        </p>
+    <div className="directory-app">
+      <div className="directory-main">
+        <section className="directory-heading">
+          <div>
+            <p className="directory-eyebrow">GOOD FOOD, CLOSER TO YOU</p>
+            <h1>Where shall we eat?</h1>
+            <p>
+              Discover restaurant menus and local kitchens.
+              <br />
+              Choose a place, find a dish, and go straight to the source.
+            </p>
+          </div>
+          <div className="directory-facts">
+            <span>
+              <strong>{profileCount || total}</strong> official-source profiles
+            </span>
+            <span>
+              <strong>30</strong> city search areas
+            </span>
+          </div>
+        </section>
+
+        <section className="directory-search" aria-label="Restaurant filters">
+          <div className="directory-choice">
+            <label htmlFor="restaurant-region">Region</label>
+            <select
+              id="restaurant-region"
+              aria-label="Region"
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+            >
+              {REGIONS.map((opt) => (
+                <option key={opt.label} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="directory-choice">
+            <label htmlFor="restaurant-city">City</label>
+            <select
+              id="restaurant-city"
+              aria-label="City"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+            >
+              {CITIES.map((opt) => (
+                <option key={opt.label} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="directory-query">
+            <label htmlFor="restaurant-query">What are you craving?</label>
+            <div>
+              <Search size={17} aria-hidden />
+              <input
+                id="restaurant-query"
+                type="search"
+                maxLength={100}
+                placeholder="Rice, grills, café, restaurant…"
+                value={draftQuery}
+                onChange={(e) => setDraftQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') suggestFood();
+                }}
+              />
+            </div>
+          </div>
+
+          <button type="button" className="directory-primary" onClick={suggestFood}>
+            <Sparkles size={17} aria-hidden />
+            Suggest food
+          </button>
+        </section>
+
+        <div className="directory-diet">
+          <div className="directory-choice">
+            <label htmlFor="restaurant-diet">Dietary requirement</label>
+            <select
+              id="restaurant-diet"
+              aria-label="Dietary requirement"
+              value={diet}
+              onChange={(e) => setDiet(e.target.value)}
+            >
+              {DIETS.map((opt) => (
+                <option key={opt.label} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {activeFilters.length > 0 ? (
+          <div className="directory-filter-status">
+            <span>{activeFilters.join(' · ')}</span>
+            <button type="button" onClick={clearFilters}>
+              Clear filters
+            </button>
+          </div>
+        ) : null}
+
+        <div className="directory-tabs">
+          <div className="directory-tab-row">
+            <div className="directory-tab-list" role="tablist" aria-label="Listing source">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={tab === 'official'}
+                onClick={() => setTab('official')}
+              >
+                <BookOpen size={15} aria-hidden />
+                Official menu sources
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={tab === 'local'}
+                onClick={() => setTab('local')}
+              >
+                <MapPin size={15} aria-hidden />
+                Local map listings
+              </button>
+            </div>
+            <span>
+              {loading ? 'Loading…' : `${filtered.length} matching profile${filtered.length === 1 ? '' : 's'}`}
+            </span>
+          </div>
+
+          {tab === 'official' ? (
+            <div className="directory-section-note">
+              <Check size={16} aria-hidden />
+              <p>
+                Images illustrate dish types, not the restaurants’ actual meals. These profiles link
+                to restaurants’ own menus. Food examples were checked on {checkedLabel}; they are
+                not live stock or price feeds. Select a branch on the official site before visiting
+                or ordering.
+              </p>
+            </div>
+          ) : (
+            <div className="directory-section-note">
+              <Check size={16} aria-hidden />
+              <p>
+                Local map listings are community-oriented profiles. Confirm opening hours, address
+                and menu details directly with the venue before visiting.
+              </p>
+            </div>
+          )}
+
+          {error ? <div className="directory-error">{error}</div> : null}
+
+          {loading ? (
+            <div className="directory-cards" aria-busy="true">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <article key={i} className="restaurant-card" style={{ minHeight: 320 }} />
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="directory-empty">
+              <h2>No matching profiles</h2>
+              <p>Try another city, clear filters, or switch listing source.</p>
+              <button type="button" onClick={clearFilters}>
+                Clear filters
+              </button>
+            </div>
+          ) : (
+            <div className="directory-cards">
+              {filtered.map((restaurant) => (
+                <RestaurantCard key={restaurant.id} restaurant={restaurant} listingMode={tab} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <section className="directory-bottom">
+          <div>
+            <h2>Your preferences, in the conversation.</h2>
+            <p>
+              Discuss menu ideas with ChowSmart, then check ingredients, allergens, pricing and
+              availability with the restaurant.
+            </p>
+          </div>
+          <Link to="/menu-studio">
+            Open AI menu studio <ArrowRight size={18} aria-hidden />
+          </Link>
+        </section>
       </div>
-
-      <div className="mb-6 space-y-4">
-        <SearchBar
-          onSubmit={(q) => setSearch(q)}
-          placeholder="Search restaurants…"
-        />
-        <FilterPanel
-          values={filters}
-          onChange={(key, value) => setFilters((f) => ({ ...f, [key]: value }))}
-          filters={[
-            {
-              key: 'cuisine',
-              label: 'Cuisine',
-              options: [
-                { label: 'Nigerian', value: 'nigerian' },
-                { label: 'Italian', value: 'italian' },
-                { label: 'Chinese', value: 'chinese' },
-                { label: 'Indian', value: 'indian' },
-                { label: 'American', value: 'american' },
-                { label: 'Mediterranean', value: 'mediterranean' },
-                { label: 'African', value: 'african' },
-              ],
-            },
-            {
-              key: 'city',
-              label: 'City',
-              options: [
-                { label: 'Lagos', value: 'Lagos' },
-                { label: 'Abuja', value: 'Abuja' },
-                { label: 'Port Harcourt', value: 'Port Harcourt' },
-                { label: 'Ibadan', value: 'Ibadan' },
-                { label: 'Kano', value: 'Kano' },
-              ],
-            },
-            {
-              key: 'price',
-              label: 'Price',
-              options: [
-                { label: '₦', value: '₦' },
-                { label: '₦₦', value: '₦₦' },
-                { label: '₦₦₦', value: '₦₦₦' },
-              ],
-            },
-            {
-              key: 'rating',
-              label: 'Min rating',
-              options: [
-                { label: '4.0+', value: '4' },
-                { label: '4.5+', value: '4.5' },
-              ],
-            },
-          ]}
-        />
-      </div>
-
-      {error ? <ErrorState message={error} onRetry={() => void load()} /> : null}
-      {loading ? (
-        <div className="grid gap-4 md:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-80" />
-          ))}
-        </div>
-      ) : items.length === 0 ? (
-        <EmptyState
-          title="No restaurants found."
-          description="Try changing your search or filters."
-        />
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {items.map((restaurant) => (
-            <RestaurantCard
-              key={restaurant.id}
-              restaurant={restaurant}
-              favorited={isFavorite('RESTAURANT', restaurant.id)}
-              onToggleFavorite={() => {
-                if (!isAuthenticated) {
-                  navigate('/login');
-                  return;
-                }
-                void toggleFavorite('RESTAURANT', restaurant.id);
-              }}
-            />
-          ))}
-        </div>
-      )}
-
-      {totalPages > 1 ? (
-        <div className="mt-8 flex items-center justify-center gap-3">
-          <Button
-            variant="outline"
-            disabled={page <= 1}
-            onClick={() => void load(page - 1)}
-          >
-            Previous
-          </Button>
-          <span className="text-sm text-muted">
-            Page {page} of {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            disabled={page >= totalPages}
-            onClick={() => void load(page + 1)}
-          >
-            Next
-          </Button>
-        </div>
-      ) : null}
-    </section>
+    </div>
   );
 }

@@ -47,7 +47,14 @@ export async function list(query: RestaurantListQuery) {
     prisma.restaurant.count({ where }),
     prisma.restaurant.findMany({
       where,
-      include: cuisineInclude,
+      include: {
+        ...cuisineInclude,
+        menuItems: {
+          where: { available: true },
+          orderBy: [{ featured: 'desc' }, { name: 'asc' }],
+          take: 3,
+        },
+      },
       orderBy: [{ featured: 'desc' }, { rating: 'desc' }, { name: 'asc' }],
       skip: (page - 1) * limit,
       take: limit,

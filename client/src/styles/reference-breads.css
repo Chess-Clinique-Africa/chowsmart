@@ -1,0 +1,451 @@
+.bread-app {
+  color: #20251f;
+  background: #fff;
+  min-height: 0;
+  font-family: var(--font-brand), Arial, Helvetica, sans-serif;
+}
+.bread-app a {
+  color: inherit;
+  text-decoration: none;
+}
+.bread-main {
+  max-width: 1240px;
+  margin: auto;
+  padding: 40px;
+}
+.bread-heading {
+  justify-content: space-between;
+  align-items: end;
+  gap: 24px;
+  margin-bottom: 18px;
+  display: flex;
+}
+.bread-kicker {
+  letter-spacing: 2px;
+  color: #527047;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0;
+}
+.bread-heading h1 {
+  letter-spacing: -2px;
+  margin: 14px 0 0;
+  font-size: 54px;
+  font-weight: 500;
+  line-height: 1.06;
+  color: #20251f;
+}
+.bread-heading em {
+  color: #36813c;
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-style: italic;
+}
+.bread-heading > p {
+  color: #72756b;
+  font-size: 16px;
+  line-height: 1.8;
+  margin: 0;
+  max-width: 280px;
+}
+.bread-browse-hint {
+  color: #7a8473;
+  margin: 0 0 18px;
+  font-size: 13px;
+}
+.bread-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  display: grid;
+}
+.bread-card {
+  text-align: left;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #e2e5dc;
+  border-radius: 12px;
+  transition: box-shadow 0.2s;
+  display: block;
+  overflow: hidden;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  width: 100%;
+}
+.bread-card:hover,
+.bread-card:focus-visible {
+  box-shadow: 0 6px 20px #17351714;
+  outline: none;
+}
+.bread-card.is-selected {
+  border-color: #21802d;
+  box-shadow: 0 0 0 1px #21802d;
+}
+.bread-photo {
+  aspect-ratio: 3 / 2;
+  background: #eee;
+  position: relative;
+  overflow: hidden;
+}
+.bread-photo img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.bread-photo > span {
+  background: #fffdf5e8;
+  border-radius: 5px;
+  padding: 6px 8px;
+  font-size: 12px;
+  position: absolute;
+  top: 13px;
+  left: 13px;
+}
+.bread-photo i {
+  color: #fff;
+  background: #167d26;
+  border-radius: 50%;
+  padding: 7px;
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  display: flex;
+  line-height: 0;
+}
+.bread-card-copy {
+  padding: 20px;
+}
+.bread-card-copy small {
+  color: #6e7961;
+  letter-spacing: 0.8px;
+  font-size: 12px;
+}
+.bread-card h2 {
+  letter-spacing: -0.5px;
+  margin: 8px 0 20px;
+  font-size: 22px;
+  font-weight: 500;
+  color: #20251f;
+}
+.bread-card-copy > span {
+  color: #3f5537;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  display: flex;
+}
+.bread-image-note {
+  color: #767b71;
+  margin: 15px 0 40px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.bread-detail {
+  border-top: 1px solid #e7e8e3;
+  grid-template-columns: 1fr 1fr;
+  gap: 44px;
+  padding-top: 35px;
+  scroll-margin-top: 90px;
+  display: grid;
+}
+.bread-detail-image > img {
+  border-radius: 12px;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.bread-detail-image > p {
+  color: #777e6e;
+  margin-top: 15px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.bread-switcher {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+  display: flex;
+}
+.bread-switcher button {
+  background: #f5f8f4;
+  border: 1px solid #dfe8de;
+  border-radius: 30px;
+  min-height: 36px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #526456;
+  cursor: pointer;
+}
+.bread-switcher button[aria-pressed='true'] {
+  color: #fff;
+  background: #087f5b;
+  border-color: #087f5b;
+}
+.bread-detail-content > h2 {
+  letter-spacing: -0.8px;
+  margin: 11px 0;
+  font-size: 30px;
+  font-weight: 500;
+  color: #20251f;
+}
+.bread-detail-content > p:not(.bread-kicker) {
+  color: #6c7664;
+  font-size: 16px;
+  line-height: 1.7;
+}
+.bread-allergens {
+  border-left: 3px solid #a1b88a;
+  margin: 18px 0 22px;
+  padding-left: 12px;
+  font-size: 13px;
+}
+.bread-allergens strong {
+  margin-bottom: 4px;
+  font-size: 12px;
+  display: block;
+}
+.bread-allergens span {
+  line-height: 1.7;
+  text-transform: capitalize;
+}
+.bread-tabs {
+  width: 100%;
+  margin-bottom: 15px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  background: #eef2ef;
+  border-radius: 10px;
+  padding: 4px;
+}
+.bread-tabs button {
+  border: 0;
+  background: transparent;
+  color: #6b7c72;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 40px;
+  cursor: pointer;
+}
+.bread-tabs button[aria-selected='true'] {
+  background: #fff;
+  color: #20251f;
+  box-shadow: 0 1px 3px #17351712;
+}
+.bread-portions {
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  display: flex;
+  flex-wrap: wrap;
+}
+.bread-portions input {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 64px;
+  padding: 7px;
+  font: inherit;
+}
+.bread-portions span {
+  color: #7b8472;
+  margin-left: auto;
+  font-size: 12px;
+}
+.bread-ingredients {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bread-ingredients li {
+  border-bottom: 1px solid #eee;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  font-size: 14px;
+  display: flex;
+}
+.bread-ingredients strong {
+  white-space: nowrap;
+  font-weight: 500;
+}
+.bread-method {
+  margin: 20px 0;
+  font-size: 14px;
+}
+.bread-method summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.bread-method ol {
+  margin-top: 15px;
+  padding-left: 22px;
+  line-height: 1.8;
+  list-style: decimal;
+}
+.bread-method li {
+  margin-bottom: 10px;
+}
+.bread-caveat {
+  color: #7c8373;
+  margin: 15px 0;
+  font-size: 12px !important;
+  line-height: 1.7;
+}
+.bread-nutrition {
+  grid-template-columns: 1fr 1fr;
+  gap: 0 22px;
+  display: grid;
+}
+.bread-nutrition > div {
+  border-bottom: 1px solid #e8e9e3;
+  justify-content: space-between;
+  padding: 13px 0;
+  font-size: 14px;
+  display: flex;
+}
+.bread-nutrition dd {
+  font-weight: 600;
+  margin: 0;
+}
+.bread-nutrition dt {
+  margin: 0;
+  color: #6c7664;
+}
+.bread-pairings {
+  gap: 12px;
+  margin: 20px 0;
+  display: grid;
+}
+.bread-pairings article {
+  background: #f4f7f0;
+  border-radius: 8px;
+  padding: 15px;
+}
+.bread-pairings h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+.bread-pairings p {
+  color: #748068;
+  margin: 6px 0;
+  font-size: 14px;
+}
+.bread-pairings small {
+  font-size: 12px;
+  color: #7b8472;
+}
+.bread-reference p {
+  color: #6c7664;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.bread-next {
+  border-top: 1px solid #e5e8df;
+  align-items: center;
+  gap: 20px;
+  margin-top: 45px;
+  padding: 30px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+.bread-next > svg {
+  color: #4d7947;
+  flex-shrink: 0;
+}
+.bread-next h2 {
+  font-size: 22px;
+  font-weight: 500;
+  margin: 0;
+  color: #20251f;
+}
+.bread-next p {
+  color: #737d69;
+  margin-top: 7px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.bread-next-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-left: auto;
+}
+.bread-next-links a {
+  white-space: nowrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  color: #087f5b;
+}
+.bread-error {
+  padding: 40px 0;
+  color: #6c7664;
+}
+
+@media (width <= 900px) {
+  .bread-heading > p {
+    max-width: 310px;
+  }
+  .bread-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .bread-detail {
+    gap: 25px;
+  }
+}
+
+@media (width <= 800px) {
+  .bread-grid {
+    scroll-snap-type: x mandatory;
+    gap: 15px;
+    padding-bottom: 12px;
+    display: flex;
+    overflow-x: auto;
+  }
+  .bread-card {
+    scroll-snap-align: start;
+    flex: 0 0 220px;
+  }
+}
+
+@media (width <= 600px) {
+  .bread-main {
+    padding: 28px 20px;
+  }
+  .bread-heading {
+    display: block;
+  }
+  .bread-heading h1 {
+    font-size: 43px;
+  }
+  .bread-heading > p {
+    margin-top: 20px;
+  }
+  .bread-detail {
+    grid-template-columns: 1fr;
+  }
+  .bread-detail-content > h2 {
+    font-size: 27px;
+  }
+  .bread-next {
+    flex-direction: column;
+    align-items: start;
+  }
+  .bread-next-links {
+    margin-left: 0;
+  }
+  .bread-next > svg {
+    display: none;
+  }
+  .bread-nutrition {
+    grid-template-columns: 1fr;
+  }
+}
