@@ -1,0 +1,19 @@
+{
+  "name": "chowsmart",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ChowSmart — restaurant discovery & thoughtful menus by PCTL",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:seed": "npm run seed --prefix server",
+    "setup": "npm install && npm install --prefix server && npm install --prefix client && npm run db:seed",
+    "start": "npm start --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
