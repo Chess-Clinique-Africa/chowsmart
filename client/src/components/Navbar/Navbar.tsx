@@ -66,39 +66,13 @@ export function Navbar() {
 
         <nav className="app-desktop-nav" aria-label="Main navigation">
           {links.map((link) => (
-            <NavLink key={link.to} to={link.to}>
+            <NavLink key={link.to} to={link.to} end={false}>
               {link.label}
             </NavLink>
           ))}
         </nav>
 
         <div className="app-nav-actions">
-          {user ? (
-            <>
-              <Link to="/profile" style={{ fontSize: 13, fontWeight: 600, color: '#63796d' }}>
-                {user.name.split(' ')[0]}
-              </Link>
-              {isAdmin ? (
-                <Link to="/admin" style={{ fontSize: 13, fontWeight: 600, color: '#63796d' }}>
-                  Admin
-                </Link>
-              ) : null}
-              <button
-                type="button"
-                onClick={() => void handleLogout()}
-                style={{
-                  border: 0,
-                  background: 'transparent',
-                  color: '#63796d',
-                  fontWeight: 600,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                }}
-              >
-                Log out
-              </button>
-            </>
-          ) : null}
           <Link to="/menu-studio" className="app-quick-action">
             <Sparkles size={17} aria-hidden />
             Plan a menu
@@ -140,6 +114,33 @@ export function Navbar() {
                 {link.label}
               </NavLink>
             ))}
+            {user ? (
+              <>
+                <NavLink to="/profile" onClick={() => setOpen(false)}>
+                  Profile
+                </NavLink>
+                <NavLink to="/favorites" onClick={() => setOpen(false)}>
+                  Favorites
+                </NavLink>
+                {isAdmin ? (
+                  <NavLink to="/admin" onClick={() => setOpen(false)}>
+                    Admin
+                  </NavLink>
+                ) : null}
+                <button
+                  type="button"
+                  className="app-menu-sheet-close"
+                  style={{ width: 'auto', padding: '14px 12px', alignSelf: 'stretch' }}
+                  onClick={() => void handleLogout()}
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <NavLink to="/login" onClick={() => setOpen(false)}>
+                Log in
+              </NavLink>
+            )}
             <Link
               to="/menu-studio"
               className="app-quick-action"

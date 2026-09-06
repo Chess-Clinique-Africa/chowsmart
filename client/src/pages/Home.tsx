@@ -11,7 +11,7 @@ import {
 
 export function Home() {
   return (
-    <>
+    <div className="cs-landing-home">
       <section className="cs-hero">
         <div>
           <p className="cs-overline">CHOWSMART BY PCTL</p>
@@ -249,6 +249,6 @@ export function Home() {
           Explore the PCTL portfolio <ArrowUpRight size={18} aria-hidden />
         </a>
       </section>
-    </>
+    </div>
   );
 }

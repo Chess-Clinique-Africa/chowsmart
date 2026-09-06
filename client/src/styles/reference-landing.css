@@ -32,7 +32,7 @@
   font-family: var(--font-brand);
 }
 
-.cs-landing main {
+.cs-landing-home {
   max-width: 1380px;
   margin: auto;
   padding: 0 5%;
