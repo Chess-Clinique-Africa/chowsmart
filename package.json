@@ -2,16 +2,20 @@
   "name": "chowsmart",
   "version": "1.0.0",
   "private": true,
-  "description": "ChowSmart — restaurant discovery & thoughtful menus by PCTL",
+  "description": "ChowSmart — restaurant discovery, recipes, breads & intelligent menu planning by PCTL",
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "dev": "concurrently -n server,client -c yellow,cyan \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
     "dev:server": "npm run dev --prefix server",
     "dev:client": "npm run dev --prefix client",
-    "db:up": "docker compose up -d",
+    "build": "npm run build --prefix client && npm run build --prefix server",
+    "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
-    "db:seed": "npm run seed --prefix server",
-    "setup": "npm install && npm install --prefix server && npm install --prefix client && npm run db:seed",
-    "start": "npm start --prefix server"
+    "db:migrate": "npm run prisma:migrate --prefix server",
+    "db:seed": "npm run prisma:seed --prefix server",
+    "db:reset": "npm run prisma:reset --prefix server",
+    "setup": "npm install && npm install --prefix server && npm install --prefix client && npm run db:up && npm run db:migrate && npm run db:seed",
+    "test": "npm run test --prefix server && npm run test --prefix client",
+    "lint": "npm run lint --prefix server && npm run lint --prefix client"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

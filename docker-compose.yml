@@ -1,7 +1,7 @@
 services:
-  db:
+  postgres:
     image: postgres:16-alpine
-    container_name: chowsmart-db
+    container_name: chowsmart-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: chowsmart
@@ -11,7 +11,42 @@ services:
       - "5432:5432"
     volumes:
       - chowsmart_pg:/var/lib/postgresql/data
-      - ./server/sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chowsmart -d chowsmart"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: chowsmart-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://chowsmart:chowsmart@postgres:5432/chowsmart?schema=public
+      JWT_SECRET: chowsmart-docker-jwt-secret
+      PORT: 5000
+      CLIENT_URL: http://localhost:5173
+      NODE_ENV: production
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:5000/api
+    container_name: chowsmart-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
 
 volumes:
   chowsmart_pg:

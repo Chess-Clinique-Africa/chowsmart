@@ -1,0 +1,252 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  ADVANCED
+}
+
+enum FavoriteType {
+  RESTAURANT
+  RECIPE
+  BREAD
+  MENU_ITEM
+}
+
+enum MenuItemType {
+  STARTER
+  MAIN
+  SIDE
+  DESSERT
+  DRINK
+  BREAD
+  RECIPE
+  MENU_ITEM
+}
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  passwordHash String
+  role         Role       @default(USER)
+  avatar       String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  favorites    Favorite[]
+  menuPlans    MenuPlan[]
+}
+
+model Cuisine {
+  id          String              @id @default(cuid())
+  name        String              @unique
+  slug        String              @unique
+  restaurants RestaurantCuisine[]
+  recipes     Recipe[]
+}
+
+model Restaurant {
+  id            String              @id @default(cuid())
+  name          String
+  slug          String              @unique
+  description   String
+  address       String
+  city          String
+  state         String?
+  country       String              @default("Nigeria")
+  latitude      Float?
+  longitude     Float?
+  phone         String?
+  email         String?
+  website       String?
+  openingHours  Json?
+  priceRange    String
+  rating        Float               @default(4.5)
+  image         String
+  featured      Boolean             @default(false)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  cuisines      RestaurantCuisine[]
+  menuItems     MenuItem[]
+}
+
+model RestaurantCuisine {
+  restaurantId String
+  cuisineId    String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  cuisine      Cuisine    @relation(fields: [cuisineId], references: [id], onDelete: Cascade)
+
+  @@id([restaurantId, cuisineId])
+}
+
+model MenuItem {
+  id           String     @id @default(cuid())
+  restaurantId String
+  name         String
+  description  String
+  price        Float
+  category     String
+  image        String?
+  ingredients  String[]
+  allergens    String[]
+  calories     Int?
+  available    Boolean    @default(true)
+  featured     Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@index([restaurantId])
+  @@index([category])
+}
+
+model Bread {
+  id          String            @id @default(cuid())
+  name        String
+  slug        String            @unique
+  subtitle    String
+  description String
+  image       String
+  category    String
+  number      Int
+  allergens   String[]
+  featured    Boolean           @default(true)
+  portionNote String?
+  prepMinutes Int?
+  reference   String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  ingredients BreadIngredient[]
+  nutrition   BreadNutrition?
+  pairings    Pairing[]
+}
+
+model BreadIngredient {
+  id         String @id @default(cuid())
+  breadId    String
+  ingredient String
+  quantity   Float
+  unit       String
+  sortOrder  Int    @default(0)
+  bread      Bread  @relation(fields: [breadId], references: [id], onDelete: Cascade)
+
+  @@index([breadId])
+}
+
+model BreadNutrition {
+  breadId        String @id
+  calories       Float
+  protein        Float
+  carbohydrates  Float
+  fat            Float
+  fibre          Float
+  sodium         Float
+  perNote        String @default("Per modelled portion")
+  bread          Bread  @relation(fields: [breadId], references: [id], onDelete: Cascade)
+}
+
+model Recipe {
+  id            String             @id @default(cuid())
+  name          String
+  slug          String             @unique
+  description   String
+  image         String
+  prepTime      Int
+  cookTime      Int
+  servings      Int
+  difficulty    Difficulty         @default(MEDIUM)
+  instructions  String[]
+  calories      Int?
+  protein       Float?
+  carbohydrates Float?
+  fat           Float?
+  allergens     String[]
+  dietaryTags   String[]
+  cuisineId     String?
+  breadSlug     String?
+  featured      Boolean            @default(false)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  cuisine       Cuisine?           @relation(fields: [cuisineId], references: [id])
+  ingredients   RecipeIngredient[]
+
+  @@index([cuisineId])
+  @@index([difficulty])
+}
+
+model RecipeIngredient {
+  id         String @id @default(cuid())
+  recipeId   String
+  ingredient String
+  quantity   String
+  unit       String
+  sortOrder  Int    @default(0)
+  recipe     Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+}
+
+model Pairing {
+  id          String  @id @default(cuid())
+  breadId     String
+  foodName    String
+  description String
+  image       String?
+  category    String
+  bread       Bread   @relation(fields: [breadId], references: [id], onDelete: Cascade)
+
+  @@index([breadId])
+}
+
+model Favorite {
+  id        String       @id @default(cuid())
+  userId    String
+  itemType  FavoriteType
+  itemId    String
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemType, itemId])
+  @@index([userId])
+}
+
+model MenuPlan {
+  id          String         @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       MenuPlanItem[]
+
+  @@index([userId])
+}
+
+model MenuPlanItem {
+  id         String       @id @default(cuid())
+  menuPlanId String
+  itemType   MenuItemType
+  itemId     String
+  name       String
+  quantity   Int          @default(1)
+  notes      String?
+  sortOrder  Int          @default(0)
+  calories   Int?
+  price      Float?
+  menuPlan   MenuPlan     @relation(fields: [menuPlanId], references: [id], onDelete: Cascade)
+
+  @@index([menuPlanId])
+}

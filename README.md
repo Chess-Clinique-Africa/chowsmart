@@ -1,25 +1,33 @@
 # ChowSmart
 
-Restaurant discovery and thoughtful menus by **Products and Consumers Technologies Limited (PCTL)**.
+Restaurant discovery, recipes, breads and intelligent menu planning by **Products and Consumers Technologies Limited (PCTL)**.
 
-Stack: **React (Vite)** · **Node.js (Express)** · **PostgreSQL**
+Inspired by the [ChowSmart concept site](https://chowsmart-pctl.chessclinique.chatgpt.site/).
 
-Inspired by the [ChowSmart concept site](https://chowsmart-pctl.chessclinique.chatgpt.site).
+## Tech stack
+
+| Layer | Stack |
+|---|---|
+| Frontend | React, Vite, TypeScript, Tailwind CSS, Framer Motion, Axios, React Hook Form, Zod, Lucide, `@dnd-kit` |
+| Backend | Node.js, Express, TypeScript, Prisma, JWT, bcrypt, Zod, Helmet, CORS, rate limit, Pino |
+| Database | PostgreSQL |
 
 ## Features
 
-- **Bread collection** — five ChowSmart loaves with recipe, nutrition, pairings and reference tabs
-- **Restaurants** — discover Nigerian venues with search and city filters
-- **Recipe lab** — kitchen ideas paired with the bread range
-- **Menu studio** — AI-assisted menu suggestions saved to PostgreSQL
-- **Our story** — brand context for ChowSmart by PCTL
+- Restaurant discovery with search, cuisine/city/price/rating filters
+- ChowSmart bread collection (5 loaves) with recipe, nutrition, pairings, reference
+- Recipe Lab with filters and detail actions
+- Menu Studio with drag-and-drop canvas, calorie/cost summary, save & export
+- Auth (register/login), profile, favorites
+- Admin dashboard with stats and delete controls
+- Global search across restaurants, recipes, breads, menu items, cuisines
 
-## Quick start
+## Quick start (local)
 
 ### Prerequisites
 
 - Node.js 20+
-- Docker optional (full PostgreSQL). Without Docker, the API uses embedded PostgreSQL via [PGlite](https://pglite.dev/).
+- Docker Desktop (for PostgreSQL)
 
 ### Setup
 
@@ -28,51 +36,89 @@ cp .env.example .env
 npm install
 npm install --prefix server
 npm install --prefix client
-npm run db:seed
-```
 
-With Docker Desktop running, set `DATABASE_URL=postgresql://chowsmart:chowsmart@localhost:5432/chowsmart` and `USE_PGLITE=false`, then:
-
-```bash
+# Start Postgres
 npm run db:up
-npm run db:seed
-```
 
-### Run
+# Migrate + seed
+cd server
+npx prisma migrate dev --name init
+npm run prisma:seed
+cd ..
 
-```bash
+# Run API + Vite
 npm run dev
 ```
 
 - App: http://localhost:5173  
-- API: http://localhost:4000/api/health  
+- API: http://localhost:5000/api/health  
 
-### Useful scripts
+### Demo accounts
 
-| Command | Description |
-|---|---|
-| `npm run db:up` | Start PostgreSQL (Docker) |
-| `npm run db:seed` | Re-run schema + seed data |
-| `npm run db:down` | Stop PostgreSQL (Docker) |
-| `npm run dev:client` | Vite only |
-| `npm run dev:server` | API only |
-## API
-
-| Method | Path | Description |
+| Role | Email | Password |
 |---|---|---|
-| GET | `/api/breads` | List breads |
-| GET | `/api/breads/:slug` | Bread detail (ingredients, steps, nutrition, pairings) |
-| GET | `/api/restaurants` | List / search restaurants (`q`, `city`) |
-| GET | `/api/recipes` | List recipes |
-| GET | `/api/recipes/:slug` | Recipe detail |
-| GET | `/api/menus/suggest` | Suggest a menu (`occasion`, `guests`) |
-| GET | `/api/menus` | Saved menu plans |
-| POST | `/api/menus` | Save a menu plan |
+| Admin | `admin@chowsmart.app` | `Admin123!` |
+| User | `user@chowsmart.app` | `User1234!` |
+
+## Docker Compose (full stack)
+
+```bash
+docker compose up --build
+```
+
+Services: `postgres` (5432), `backend` (5000), `frontend` (5173 → nginx).
+
+## Environment
+
+See [.env.example](.env.example):
+
+```
+DATABASE_URL=postgresql://chowsmart:chowsmart@localhost:5432/chowsmart?schema=public
+JWT_SECRET=...
+PORT=5000
+CLIENT_URL=http://localhost:5173
+VITE_API_URL=http://localhost:5000/api
+```
+
+## API overview
+
+All responses use `{ success: true, data }` or `{ success: false, error: { message, code } }`.
+
+| Area | Endpoints |
+|---|---|
+| Auth | `POST /api/auth/register`, `login`, `logout`, `GET /me` |
+| Restaurants | `GET/POST /api/restaurants`, `GET /:slug`, `PUT/DELETE /:id` |
+| Menu items | CRUD under `/api/menu-items` |
+| Breads | CRUD under `/api/breads` |
+| Recipes | CRUD under `/api/recipes` |
+| Menu plans | CRUD under `/api/menu-plans` (auth) |
+| Favorites | `GET/POST /api/favorites`, `DELETE /:id` (auth) |
+| Search | `GET /api/search?q=` |
+| Admin | `GET /api/admin/stats` (admin) |
+
+Admin mutations require `Authorization: Bearer <token>` with `ADMIN` role.
 
 ## Project layout
 
 ```
-client/     React frontend
-server/     Express API + seed
-server/sql/ PostgreSQL schema
+client/   React frontend
+server/   Express API + Prisma
+docker-compose.yml
 ```
+
+## Testing
+
+```bash
+npm run test --prefix server
+npm run test --prefix client
+```
+
+## Deployment notes
+
+- **Frontend:** build with `VITE_API_URL` pointing at your API; deploy `client/dist` to Vercel.
+- **Backend:** deploy `server` to Render / Railway / Fly.io; set `DATABASE_URL`, `JWT_SECRET`, `CLIENT_URL`.
+- **Database:** Neon, Supabase or Railway PostgreSQL; run `npx prisma migrate deploy` and `npm run prisma:seed` once.
+
+## Auth note
+
+Access tokens are stored in `localStorage` for the demo SPA. Prefer httpOnly cookies for production hardening.
