@@ -751,7 +751,7 @@ export function MenuStudio() {
               <img src="/food-spread.webp" alt="Nigerian inspired dishes on a shared table" />
               <div>
                 <span className="eyebrow">FROM OUR NIGERIAN KITCHEN</span>
-                <h3>
+                <h3 style={{ color: 'white' }}>
                   Good food starts
                   <br />
                   with good foundations.
