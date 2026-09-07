@@ -8,6 +8,7 @@ import {
   Mic,
   Plus,
   Sparkles,
+  Trash2,
 } from 'lucide-react';
 import { TalkToChowSmartModal } from '@/components/TalkToChowSmartModal/TalkToChowSmartModal';
 import { breadsService } from '@/services/breads';
@@ -134,6 +135,7 @@ export function MenuStudio() {
   const [breads, setBreads] = useState<Bread[]>([]);
   const [saved, setSaved] = useState<MenuPlan[]>([]);
   const [savedError, setSavedError] = useState('');
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [saveNote, setSaveNote] = useState('');
   const [talkOpen, setTalkOpen] = useState(false);
@@ -313,6 +315,21 @@ export function MenuStudio() {
       ]);
       setThinking(false);
     }, 450);
+  }
+
+  async function deleteSavedPlan(id: string, name: string) {
+    if (!window.confirm(`Delete “${name}”? This cannot be undone.`)) return;
+    setDeletingId(id);
+    setSavedError('');
+    try {
+      await menuPlansService.remove(id);
+      setSaved((prev) => prev.filter((plan) => plan.id !== id));
+      setSaveNote('Menu deleted.');
+    } catch (err) {
+      setSavedError(err instanceof Error ? err.message : 'Could not delete menu');
+    } finally {
+      setDeletingId(null);
+    }
   }
 
   async function savePlan(message: ChatMessage) {
@@ -686,6 +703,15 @@ export function MenuStudio() {
                         </li>
                       ))}
                     </ul>
+                    <button
+                      type="button"
+                      className="saved-delete"
+                      disabled={deletingId === plan.id}
+                      onClick={() => void deleteSavedPlan(plan.id, plan.name)}
+                    >
+                      <Trash2 size={14} aria-hidden />
+                      {deletingId === plan.id ? 'Deleting…' : 'Delete menu'}
+                    </button>
                   </details>
                 ))}
               </div>

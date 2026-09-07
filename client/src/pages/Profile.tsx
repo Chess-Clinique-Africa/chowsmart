@@ -5,11 +5,14 @@ import { menuPlansService } from '@/services/menuPlans';
 import { useFavorites } from '@/hooks/useFavorites';
 import type { MenuPlan } from '@/types';
 import { Badge } from '@/components/UI/Badge';
+import { Button } from '@/components/UI/Button';
 
 export function Profile() {
   const { user } = useAuth();
   const { favorites } = useFavorites();
   const [menus, setMenus] = useState<MenuPlan[]>([]);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [menuError, setMenuError] = useState('');
 
   useEffect(() => {
     menuPlansService
@@ -17,6 +20,20 @@ export function Profile() {
       .then((data) => setMenus(data.items))
       .catch(() => setMenus([]));
   }, []);
+
+  async function deleteMenu(id: string, name: string) {
+    if (!window.confirm(`Delete “${name}”? This cannot be undone.`)) return;
+    setDeletingId(id);
+    setMenuError('');
+    try {
+      await menuPlansService.remove(id);
+      setMenus((prev) => prev.filter((menu) => menu.id !== id));
+    } catch (err) {
+      setMenuError(err instanceof Error ? err.message : 'Could not delete menu');
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   if (!user) return null;
 
@@ -55,13 +72,27 @@ export function Profile() {
 
         <div className="rounded-2xl border border-line bg-bg-elevated p-5">
           <h2 className="font-extrabold tracking-tight text-2xl">Saved menus</h2>
+          {menuError ? <p className="mt-3 text-sm text-danger">{menuError}</p> : null}
           <ul className="mt-4 space-y-3">
             {menus.map((menu) => (
-              <li key={menu.id} className="rounded-xl border border-line p-3">
-                <p className="font-medium">{menu.name}</p>
-                <p className="text-sm text-muted">
-                  {menu.items?.length || 0} items · {new Date(menu.createdAt).toLocaleDateString()}
-                </p>
+              <li
+                key={menu.id}
+                className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-line p-3"
+              >
+                <div>
+                  <p className="font-medium">{menu.name}</p>
+                  <p className="text-sm text-muted">
+                    {menu.items?.length || 0} items · {new Date(menu.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={deletingId === menu.id}
+                  onClick={() => void deleteMenu(menu.id, menu.name)}
+                >
+                  {deletingId === menu.id ? 'Deleting…' : 'Delete'}
+                </Button>
               </li>
             ))}
             {menus.length === 0 ? <li className="text-sm text-muted">No saved menus yet.</li> : null}

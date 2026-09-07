@@ -31,3 +31,5 @@
 .talk-modal-alert{background:#fdece7;color:#9f432d;border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.55;margin-bottom:16px}
 .talk-modal-disclaimer{margin:0;text-align:center;color:#909886;font-size:11px;line-height:1.65}
 @media (width<=520px){.talk-modal{padding:24px 18px 20px}.talk-modal h2{font-size:24px}.talk-modal-actions{flex-direction:column}.talk-modal-primary,.talk-modal-secondary{width:100%}}
+
+.saved-list ul{margin:8px 0 0;padding-left:18px;line-height:1.7;color:#5f6b5a}.saved-delete{color:#9f432d;background:#fff;border:1px solid #ecd8d1;border-radius:8px;align-items:center;gap:7px;margin-top:14px;padding:8px 12px;font-size:11px;font-weight:600;display:inline-flex}.saved-delete:hover{background:#fff5f1}

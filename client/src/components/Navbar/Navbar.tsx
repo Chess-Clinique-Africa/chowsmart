@@ -98,6 +98,15 @@ export function Navbar() {
               {ctaLabel}
             </Link>
           )}
+          {user ? (
+            <button type="button" className="app-auth-action" onClick={() => void handleLogout()}>
+              Log out
+            </button>
+          ) : (
+            <Link to="/login" className="app-auth-action" onClick={() => setOpen(false)}>
+              Log in
+            </Link>
+          )}
           <button
             type="button"
             className="app-mobile-menu"

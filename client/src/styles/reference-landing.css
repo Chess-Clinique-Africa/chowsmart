@@ -593,6 +593,30 @@ html .app-quick-action:hover {
   background: #076947;
 }
 
+html .app-auth-action {
+  white-space: nowrap;
+  color: #174c37;
+  background: transparent;
+  border: 1.5px solid #174c37;
+  border-radius: 10px;
+  justify-content: center;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+html .app-auth-action:hover {
+  color: #076947;
+  background: #eff5f1;
+  border-color: #076947;
+}
+
 html .app-mobile-menu {
   color: #174c37;
   background: #eff5f1;
@@ -843,6 +867,11 @@ html .app-skip:focus {
     font-size: 12px;
     display: flex;
   }
+  html .app-auth-action {
+    min-height: 40px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
   html .app-navigation .chowsmart-identity .identity-name {
     font-size: 23px;
   }
@@ -965,5 +994,10 @@ html .app-skip:focus {
   }
   html .app-quick-action {
     display: none;
+  }
+  html .app-auth-action {
+    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 12px;
   }
 }

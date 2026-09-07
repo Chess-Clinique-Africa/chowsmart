@@ -55,7 +55,7 @@ export async function list(query: RestaurantListQuery) {
           take: 3,
         },
       },
-      orderBy: [{ featured: 'desc' }, { rating: 'desc' }, { name: 'asc' }],
+      orderBy: { name: 'asc' },
       skip: (page - 1) * limit,
       take: limit,
     }),

@@ -23,7 +23,7 @@ export async function search(q: string, limit = 8) {
       },
       include: { cuisines: { include: { cuisine: true } } },
       take: limit,
-      orderBy: { rating: 'desc' },
+      orderBy: { name: 'asc' },
     }),
     prisma.recipe.findMany({
       where: {
