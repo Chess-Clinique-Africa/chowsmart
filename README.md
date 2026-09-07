@@ -115,8 +115,9 @@ npm run test --prefix client
 
 ## Deployment notes
 
-- **Frontend:** build with `VITE_API_URL` pointing at your API; deploy `client/dist` to Vercel.
-- **Backend:** deploy `server` to Render / Railway / Fly.io; set `DATABASE_URL`, `JWT_SECRET`, `CLIENT_URL`.
+- **Frontend (Netlify):** repo includes `netlify.toml` (`base = client`, `publish = dist`, SPA redirects). Set env `VITE_API_URL` to your live API (e.g. `https://your-api.example.com/api`), then redeploy. Publish dir must be `client/dist` (built output), not the `client` source folder — serving source `index.html` loads `/src/main.tsx` and shows a blank page.
+- **Frontend (other hosts):** build with `VITE_API_URL` pointing at your API; deploy `client/dist`.
+- **Backend:** deploy `server` to Render / Railway / Fly.io; set `DATABASE_URL`, `JWT_SECRET`, `CLIENT_URL` (your Netlify URL).
 - **Database:** Neon, Supabase or Railway PostgreSQL; run `npx prisma migrate deploy` and `npm run prisma:seed` once.
 
 ## Auth note
