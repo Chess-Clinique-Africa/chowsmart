@@ -1,22 +1,25 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
+  ArrowUpRight,
   ChefHat,
+  Info,
   MapPin,
   Menu,
   Mic,
   Sparkles,
   Wheat,
   X,
+  type LucideIcon,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
-const links = [
-  { to: '/restaurants', label: 'Restaurants' },
-  { to: '/breads', label: 'Our breads' },
-  { to: '/menu-studio', label: 'Menu studio' },
-  { to: '/recipe-lab', label: 'Recipe lab' },
-  { to: '/our-story', label: 'Our story' },
+const links: { to: string; label: string; Icon: LucideIcon }[] = [
+  { to: '/restaurants', label: 'Restaurants', Icon: MapPin },
+  { to: '/breads', label: 'Our breads', Icon: Wheat },
+  { to: '/menu-studio', label: 'Menu studio', Icon: Sparkles },
+  { to: '/recipe-lab', label: 'Recipe lab', Icon: ChefHat },
+  { to: '/our-story', label: 'Our story', Icon: Info },
 ];
 
 const dockLinks = [
@@ -118,6 +121,12 @@ export function Navbar() {
 
       {open ? (
         <div className="app-menu-sheet" role="dialog" aria-modal="true" aria-label="Navigation">
+          <button
+            type="button"
+            className="app-menu-sheet-backdrop"
+            aria-label="Close navigation menu"
+            onClick={() => setOpen(false)}
+          />
           <div className="app-menu-sheet-panel">
             <button
               type="button"
@@ -125,64 +134,52 @@ export function Navbar() {
               aria-label="Close navigation menu"
               onClick={() => setOpen(false)}
             >
-              <X size={20} />
+              <X size={18} strokeWidth={2.25} aria-hidden />
             </button>
-            {links.map((link) => (
-              <NavLink key={link.to} to={link.to} onClick={() => setOpen(false)}>
-                {link.label}
-              </NavLink>
-            ))}
-            {user ? (
-              <>
-                <NavLink to="/profile" onClick={() => setOpen(false)}>
-                  Profile
+
+            <div className="app-menu-sheet-intro">
+              <h2>Explore ChowSmart</h2>
+              <p>Discover food, build a menu, or develop a recipe.</p>
+            </div>
+
+            <nav className="app-menu-sheet-nav" aria-label="Explore">
+              {links.map(({ to, label, Icon }) => (
+                <NavLink key={to} to={to} onClick={() => setOpen(false)}>
+                  <span className="app-menu-sheet-link-main">
+                    <Icon size={22} strokeWidth={1.75} aria-hidden />
+                    <span>{label}</span>
+                  </span>
+                  <ArrowUpRight size={18} strokeWidth={1.85} aria-hidden />
                 </NavLink>
-                <NavLink to="/favorites" onClick={() => setOpen(false)}>
-                  Favorites
-                </NavLink>
-                {isAdmin ? (
-                  <NavLink to="/admin" onClick={() => setOpen(false)}>
-                    Admin
+              ))}
+            </nav>
+
+            <div className="app-menu-sheet-account">
+              {user ? (
+                <>
+                  <NavLink to="/profile" onClick={() => setOpen(false)}>
+                    Profile
                   </NavLink>
-                ) : null}
-                <button
-                  type="button"
-                  className="app-menu-sheet-close"
-                  style={{ width: 'auto', padding: '14px 12px', alignSelf: 'stretch' }}
-                  onClick={() => void handleLogout()}
-                >
-                  Log out
-                </button>
-              </>
-            ) : (
-              <NavLink to="/login" onClick={() => setOpen(false)}>
-                Log in
-              </NavLink>
-            )}
-            {onMenuStudio ? (
-              <button
-                type="button"
-                className="app-quick-action"
-                style={{ marginTop: 12 }}
-                onClick={() => {
-                  setOpen(false);
-                  window.dispatchEvent(new CustomEvent('chowsmart:open-talk'));
-                }}
-              >
-                <CtaIcon size={17} aria-hidden />
-                {ctaLabel}
-              </button>
-            ) : (
-              <Link
-                to="/menu-studio"
-                className="app-quick-action"
-                style={{ marginTop: 12 }}
-                onClick={() => setOpen(false)}
-              >
-                <CtaIcon size={17} aria-hidden />
-                {ctaLabel}
-              </Link>
-            )}
+                  <NavLink to="/favorites" onClick={() => setOpen(false)}>
+                    Favorites
+                  </NavLink>
+                  {isAdmin ? (
+                    <NavLink to="/admin" onClick={() => setOpen(false)}>
+                      Admin
+                    </NavLink>
+                  ) : null}
+                  <button type="button" onClick={() => void handleLogout()}>
+                    Log out
+                  </button>
+                </>
+              ) : (
+                <NavLink to="/login" onClick={() => setOpen(false)}>
+                  Log in
+                </NavLink>
+              )}
+            </div>
+
+            <p className="app-menu-sheet-footer">Products and Consumers Technologies Limited</p>
           </div>
         </div>
       ) : null}
