@@ -186,7 +186,7 @@ function breadToCard(bread: Bread): CollectionCard {
     portionLabel: `${grams} g / portion`,
     allergens,
     dietaryTags: [],
-    region: 'nigeria',
+    region: 'bread',
     bread,
   };
 }
@@ -329,7 +329,7 @@ export function RecipeLab() {
     recipes.forEach((r) => {
       if (r.cuisine?.slug) set.add(r.cuisine.slug);
     });
-    set.add('nigerian');
+    set.add('bread');
     return Array.from(set).sort();
   }, [recipes]);
 
