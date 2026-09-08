@@ -403,7 +403,7 @@ function AdminList({
   return (
     <div className="rounded-2xl border border-line bg-bg-elevated p-5">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="whitespace-nowrap font-extrabold tracking-tight text-2xl leading-none">
+        <h2 className="whitespace-nowrap font-extrabold tracking-tight text-lg leading-none">
           {title}
         </h2>
         <Button type="button" variant="outline" size="sm" className="shrink-0" onClick={onAdd}>
