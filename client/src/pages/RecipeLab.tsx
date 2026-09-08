@@ -341,8 +341,8 @@ export function RecipeLab() {
       if (category && card.dishKind !== category) return false;
       if (region) {
         const r = card.region.toLowerCase();
-        if (region === 'nigeria') {
-          if (!(r === 'nigerian' || r === 'nigeria' || card.kind === 'BREAD')) return false;
+        if (region === 'bread') {
+          if (!( r === 'nigeria' || card.kind === 'BREAD')) return false;
         } else if (r !== region) return false;
       }
       if (search.trim()) {
