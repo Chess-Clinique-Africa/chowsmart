@@ -62,7 +62,11 @@ export function AdminDashboard() {
       setDbLog(
         [result.output, result.migrateOutput, result.seedOutput].filter(Boolean).join('\n\n')
       );
-      await load();
+      try {
+        await load();
+      } catch {
+        // Seed recreates users; an old JWT may break follow-up loads.
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : `${label} failed`);
     } finally {

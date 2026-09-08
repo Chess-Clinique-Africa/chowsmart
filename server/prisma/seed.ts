@@ -6,6 +6,8 @@ import { PrismaClient, Difficulty, Role, MenuItemType } from "@prisma/client";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 config({ path: resolve(__dirname, "../../.env") });
+config({ path: resolve(__dirname, "../.env") });
+config();
 
 const prisma = new PrismaClient();
 

@@ -17,12 +17,12 @@ export const adminService = {
     return unwrap<{ bootstrapAllowed: boolean }>(api.get('/admin/bootstrap-status'));
   },
   migrateDatabase() {
-    return unwrap<DbCommandResult>(api.post('/admin/db/migrate', null, { timeout: 180_000 }));
+    return unwrap<DbCommandResult>(api.post('/admin/db/migrate', {}, { timeout: 180_000 }));
   },
   seedDatabase() {
-    return unwrap<DbCommandResult>(api.post('/admin/db/seed', null, { timeout: 360_000 }));
+    return unwrap<DbCommandResult>(api.post('/admin/db/seed', {}, { timeout: 360_000 }));
   },
   setupDatabase() {
-    return unwrap<DbCommandResult>(api.post('/admin/db/setup', null, { timeout: 420_000 }));
+    return unwrap<DbCommandResult>(api.post('/admin/db/setup', {}, { timeout: 420_000 }));
   },
 };
