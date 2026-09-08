@@ -346,7 +346,7 @@ export function AdminDashboard() {
         </div>
       </Modal>
 
-      <div className="mt-12 grid gap-6 lg:grid-cols-3">
+      <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         <AdminList
           title="Restaurants"
           onAdd={() => setEditor({ kind: 'restaurant', mode: 'create' })}
@@ -401,12 +401,12 @@ function AdminList({
   }[];
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-bg-elevated p-5">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="whitespace-nowrap font-extrabold tracking-tight text-lg leading-none">
+    <div className="min-w-0 overflow-hidden rounded-2xl border border-line bg-bg-elevated p-5">
+      <div className="mb-3 flex min-w-0 items-center justify-between gap-2">
+        <h2 className="min-w-0 truncate font-extrabold tracking-tight text-base leading-none">
           {title}
         </h2>
-        <Button type="button" variant="outline" size="sm" className="shrink-0" onClick={onAdd}>
+        <Button type="button" variant="outline" size="sm" className="shrink-0 px-3" onClick={onAdd}>
           <Plus size={14} aria-hidden />
           Add
         </Button>
