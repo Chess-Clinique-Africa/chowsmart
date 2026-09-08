@@ -186,7 +186,7 @@ function breadToCard(bread: Bread): CollectionCard {
     portionLabel: `${grams} g / portion`,
     allergens,
     dietaryTags: [],
-    region: 'bread',
+    region: 'chowsmartbread',
     bread,
   };
 }
@@ -341,7 +341,7 @@ export function RecipeLab() {
       if (category && card.dishKind !== category) return false;
       if (region) {
         const r = card.region.toLowerCase();
-        if (region === 'bread') {
+        if (region === 'chowsmartbread') {
           if (!( r === 'nigeria' || card.kind === 'BREAD')) return false;
         } else if (r !== region) return false;
       }
