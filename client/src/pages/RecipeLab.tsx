@@ -329,7 +329,7 @@ export function RecipeLab() {
     recipes.forEach((r) => {
       if (r.cuisine?.slug) set.add(r.cuisine.slug);
     });
-    set.add('nigeria');
+   
     return Array.from(set).sort();
   }, [recipes]);
 
