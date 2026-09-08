@@ -8,11 +8,18 @@ import { breadsService } from '@/services/breads';
 import { Skeleton } from '@/components/UI/Skeleton';
 import { ErrorState } from '@/components/UI/ErrorState';
 import { Button } from '@/components/UI/Button';
+import { Modal } from '@/components/UI/Modal';
 import {
   CatalogEditorPanel,
   type CatalogEditor,
 } from '@/components/Admin/CatalogEditorPanel';
 import type { AdminStats, Bread, Recipe, Restaurant } from '@/types';
+
+type DeleteTarget = {
+  kind: 'restaurant' | 'recipe' | 'bread';
+  id: string;
+  name: string;
+};
 
 export function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null);
@@ -26,6 +33,8 @@ export function AdminDashboard() {
   const [dbLog, setDbLog] = useState('');
   const [editor, setEditor] = useState<CatalogEditor | null>(null);
   const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -80,51 +89,34 @@ export function AdminDashboard() {
     }
   }
 
-  async function removeRestaurant(id: string, name: string) {
-    if (!window.confirm(`Delete restaurant “${name}”?`)) return;
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
     setMessage('');
     setError('');
     try {
-      await restaurantsService.remove(id);
-      setMessage(`Deleted ${name}`);
-      if (editor?.kind === 'restaurant' && editor.mode === 'edit' && editor.item.id === id) {
+      if (deleteTarget.kind === 'restaurant') {
+        await restaurantsService.remove(deleteTarget.id);
+      } else if (deleteTarget.kind === 'recipe') {
+        await recipesService.remove(deleteTarget.id);
+      } else {
+        await breadsService.remove(deleteTarget.id);
+      }
+      setMessage(`Deleted “${deleteTarget.name}”`);
+      if (
+        editor &&
+        editor.mode === 'edit' &&
+        editor.kind === deleteTarget.kind &&
+        editor.item.id === deleteTarget.id
+      ) {
         setEditor(null);
       }
+      setDeleteTarget(null);
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Delete failed');
-    }
-  }
-
-  async function removeRecipe(id: string, name: string) {
-    if (!window.confirm(`Delete recipe “${name}”?`)) return;
-    setMessage('');
-    setError('');
-    try {
-      await recipesService.remove(id);
-      setMessage(`Deleted ${name}`);
-      if (editor?.kind === 'recipe' && editor.mode === 'edit' && editor.item.id === id) {
-        setEditor(null);
-      }
-      await load();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Delete failed');
-    }
-  }
-
-  async function removeBread(id: string, name: string) {
-    if (!window.confirm(`Delete bread “${name}”?`)) return;
-    setMessage('');
-    setError('');
-    try {
-      await breadsService.remove(id);
-      setMessage(`Deleted ${name}`);
-      if (editor?.kind === 'bread' && editor.mode === 'edit' && editor.item.id === id) {
-        setEditor(null);
-      }
-      await load();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Delete failed');
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -318,16 +310,41 @@ export function AdminDashboard() {
         </div>
       ) : null}
 
-      {editor ? (
-        <CatalogEditorPanel
-          editor={editor}
-          saving={saving}
-          onCancel={() => setEditor(null)}
-          onSaveRestaurant={saveRestaurant}
-          onSaveRecipe={saveRecipe}
-          onSaveBread={saveBread}
-        />
-      ) : null}
+      <CatalogEditorPanel
+        editor={editor}
+        saving={saving}
+        onCancel={() => setEditor(null)}
+        onSaveRestaurant={saveRestaurant}
+        onSaveRecipe={saveRecipe}
+        onSaveBread={saveBread}
+      />
+
+      <Modal
+        open={!!deleteTarget}
+        title="Delete item"
+        onClose={() => {
+          if (!deleting) setDeleteTarget(null);
+        }}
+        size="sm"
+        closeDisabled={deleting}
+      >
+        <p className="text-sm text-muted">
+          Delete <span className="font-semibold text-ink">“{deleteTarget?.name}”</span>? This cannot
+          be undone.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <Button variant="danger" loading={deleting} onClick={() => void confirmDelete()}>
+            Delete
+          </Button>
+          <Button
+            variant="outline"
+            disabled={deleting}
+            onClick={() => setDeleteTarget(null)}
+          >
+            Cancel
+          </Button>
+        </div>
+      </Modal>
 
       <div className="mt-12 grid gap-8 lg:grid-cols-3">
         <AdminList
@@ -338,7 +355,7 @@ export function AdminDashboard() {
             name: r.name,
             meta: `${r.city} · ${r.priceRange}`,
             onEdit: () => setEditor({ kind: 'restaurant', mode: 'edit', item: r }),
-            onDelete: () => void removeRestaurant(r.id, r.name),
+            onDelete: () => setDeleteTarget({ kind: 'restaurant', id: r.id, name: r.name }),
           }))}
         />
         <AdminList
@@ -349,7 +366,7 @@ export function AdminDashboard() {
             name: r.name,
             meta: r.difficulty,
             onEdit: () => setEditor({ kind: 'recipe', mode: 'edit', item: r }),
-            onDelete: () => void removeRecipe(r.id, r.name),
+            onDelete: () => setDeleteTarget({ kind: 'recipe', id: r.id, name: r.name }),
           }))}
         />
         <AdminList
@@ -360,7 +377,7 @@ export function AdminDashboard() {
             name: b.name,
             meta: `#${b.number} · ${b.category}`,
             onEdit: () => setEditor({ kind: 'bread', mode: 'edit', item: b }),
-            onDelete: () => void removeBread(b.id, b.name),
+            onDelete: () => setDeleteTarget({ kind: 'bread', id: b.id, name: b.name }),
           }))}
         />
       </div>

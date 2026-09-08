@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { Button } from '@/components/UI/Button';
 import { Input } from '@/components/UI/Input';
 import { Select } from '@/components/UI/Select';
+import { Modal } from '@/components/UI/Modal';
 import type { Bread, Recipe, Restaurant } from '@/types';
 
 const fieldClass =
@@ -26,8 +27,6 @@ function splitCsv(value: string) {
     .filter(Boolean);
 }
 
-type EditorKind = 'restaurant' | 'recipe' | 'bread';
-
 export type CatalogEditor =
   | { kind: 'restaurant'; mode: 'create' }
   | { kind: 'restaurant'; mode: 'edit'; item: Restaurant }
@@ -44,52 +43,49 @@ export function CatalogEditorPanel({
   onSaveRecipe,
   onSaveBread,
 }: {
-  editor: CatalogEditor;
+  editor: CatalogEditor | null;
   saving: boolean;
   onCancel: () => void;
   onSaveRestaurant: (payload: Record<string, unknown>) => Promise<void>;
   onSaveRecipe: (payload: Record<string, unknown>) => Promise<void>;
   onSaveBread: (payload: Record<string, unknown>) => Promise<void>;
 }) {
-  const title =
-    editor.mode === 'create'
+  const title = editor
+    ? editor.mode === 'create'
       ? `Add ${editor.kind}`
-      : `Edit ${editor.kind}`;
+      : `Edit ${editor.kind}`
+    : '';
 
   return (
-    <div className="mt-8 rounded-2xl border border-line bg-bg-elevated p-5">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-extrabold tracking-tight text-2xl capitalize">{title}</h2>
-        <Button type="button" variant="ghost" size="sm" onClick={onCancel} disabled={saving}>
-          Cancel
-        </Button>
-      </div>
-
-      {editor.kind === 'restaurant' ? (
+    <Modal open={!!editor} title={title} onClose={onCancel} size="lg" closeDisabled={saving}>
+      {editor?.kind === 'restaurant' ? (
         <RestaurantForm
+          key={editor.mode === 'edit' ? editor.item.id : 'restaurant-create'}
           initial={editor.mode === 'edit' ? editor.item : null}
           saving={saving}
           onSubmit={onSaveRestaurant}
           onCancel={onCancel}
         />
       ) : null}
-      {editor.kind === 'recipe' ? (
+      {editor?.kind === 'recipe' ? (
         <RecipeForm
+          key={editor.mode === 'edit' ? editor.item.id : 'recipe-create'}
           initial={editor.mode === 'edit' ? editor.item : null}
           saving={saving}
           onSubmit={onSaveRecipe}
           onCancel={onCancel}
         />
       ) : null}
-      {editor.kind === 'bread' ? (
+      {editor?.kind === 'bread' ? (
         <BreadForm
+          key={editor.mode === 'edit' ? editor.item.id : 'bread-create'}
           initial={editor.mode === 'edit' ? editor.item : null}
           saving={saving}
           onSubmit={onSaveBread}
           onCancel={onCancel}
         />
       ) : null}
-    </div>
+    </Modal>
   );
 }
 
@@ -388,5 +384,3 @@ function BreadForm({
     </form>
   );
 }
-
-export type { EditorKind };
