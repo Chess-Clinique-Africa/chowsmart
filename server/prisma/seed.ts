@@ -1909,11 +1909,16 @@ export async function main() {
   return counts;
 }
 
-main()
-  .catch((error) => {
-    console.error("Seed failed:", error);
-    process.exitCode = 1;
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+const isDirectRun =
+  process.argv[1] != null && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+
+if (isDirectRun) {
+  main()
+    .catch((error) => {
+      console.error("Seed failed:", error);
+      process.exitCode = 1;
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}
