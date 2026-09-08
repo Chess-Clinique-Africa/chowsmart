@@ -101,7 +101,16 @@ function formulaFrom(tags: string[], allergens: string[]) {
 }
 
 function dishKindFromRecipe(recipe: Recipe): CollectionCard['dishKind'] {
-  const blob = `${recipe.name} ${recipe.dietaryTags.join(' ')}`.toLowerCase();
+  const blob = `${recipe.name} ${recipe.description} ${recipe.dietaryTags.join(' ')} ${recipe.breadSlug || ''}`.toLowerCase();
+
+  // Loaves, flatbreads, toast and African breads (masa, agege, etc.) belong in Bread.
+  if (
+    /bread|baguette|toast|naan|masa|loaf|bun|roll|focaccia|pita|chapati|roti|injera|brioche|croissant|flatbread|ciabatta|sourdough|agege|scone|muffin|pancake|crepe|crêpe/.test(
+      blob
+    )
+  ) {
+    return 'bread';
+  }
   if (/side|salad|greens|yoghurt|yogurt|fruit|mango|plantain|moi moi|swallow|pounded/.test(blob)) {
     return 'side';
   }
@@ -175,7 +184,7 @@ function breadToCard(bread: Bread): CollectionCard {
     kind: 'BREAD',
     id: bread.id,
     slug: bread.slug,
-    name: bread.name.startsWith('ChowSmart') ? bread.name : `ChowSmart ${bread.name}`,
+    name: bread.name,
     description: shortBlurb(bread.description),
     image: breadImage(bread),
     badge: 'PRODUCT CONCEPT',
@@ -195,7 +204,13 @@ function recipeToCard(recipe: Recipe): CollectionCard {
   const dishKind = dishKindFromRecipe(recipe);
   const formula = formulaFrom(recipe.dietaryTags || [], recipe.allergens || []);
   const category =
-    dishKind === 'side' ? 'Side' : dishKind === 'combo' ? 'Combo' : 'Main';
+    dishKind === 'bread'
+      ? 'Bread'
+      : dishKind === 'side'
+        ? 'Side'
+        : dishKind === 'combo'
+          ? 'Combo'
+          : 'Main';
   return {
     key: `recipe-${recipe.id}`,
     kind: 'RECIPE',
@@ -342,7 +357,7 @@ export function RecipeLab() {
       if (region) {
         const r = card.region.toLowerCase();
         if (region === 'chowsmartbread') {
-          if (!( r === 'nigeria' || card.kind === 'BREAD')) return false;
+          if (card.kind !== 'BREAD') return false;
         } else if (r !== region) return false;
       }
       if (search.trim()) {
