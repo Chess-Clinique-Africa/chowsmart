@@ -402,9 +402,11 @@ function AdminList({
 }) {
   return (
     <div className="rounded-2xl border border-line bg-bg-elevated p-4">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <h2 className="font-extrabold tracking-tight text-2xl">{title}</h2>
-        <Button type="button" variant="outline" size="sm" onClick={onAdd}>
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <h2 className="min-w-0 flex-1 break-words font-extrabold tracking-tight text-xl leading-tight">
+          {title}
+        </h2>
+        <Button type="button" variant="outline" size="sm" className="shrink-0" onClick={onAdd}>
           <Plus size={14} aria-hidden />
           Add
         </Button>
