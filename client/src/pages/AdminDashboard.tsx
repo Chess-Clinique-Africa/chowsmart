@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Database, RefreshCw } from 'lucide-react';
+import { Database, Plus, RefreshCw } from 'lucide-react';
 import { adminService, type DbCommandResult } from '@/services/admin';
 import { restaurantsService } from '@/services/restaurants';
 import { recipesService } from '@/services/recipes';
@@ -8,6 +8,10 @@ import { breadsService } from '@/services/breads';
 import { Skeleton } from '@/components/UI/Skeleton';
 import { ErrorState } from '@/components/UI/ErrorState';
 import { Button } from '@/components/UI/Button';
+import {
+  CatalogEditorPanel,
+  type CatalogEditor,
+} from '@/components/Admin/CatalogEditorPanel';
 import type { AdminStats, Bread, Recipe, Restaurant } from '@/types';
 
 export function AdminDashboard() {
@@ -20,6 +24,8 @@ export function AdminDashboard() {
   const [message, setMessage] = useState('');
   const [dbBusy, setDbBusy] = useState(false);
   const [dbLog, setDbLog] = useState('');
+  const [editor, setEditor] = useState<CatalogEditor | null>(null);
+  const [saving, setSaving] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -27,9 +33,9 @@ export function AdminDashboard() {
     try {
       const [s, r, rec, b] = await Promise.all([
         adminService.stats(),
-        restaurantsService.list({ limit: 20 }),
-        recipesService.list({ limit: 20 }),
-        breadsService.list({ limit: 20 }),
+        restaurantsService.list({ limit: 50 }),
+        recipesService.list({ limit: 50 }),
+        breadsService.list({ limit: 50 }),
       ]);
       setStats(s);
       setRestaurants(r.items);
@@ -77,9 +83,13 @@ export function AdminDashboard() {
   async function removeRestaurant(id: string, name: string) {
     if (!window.confirm(`Delete restaurant “${name}”?`)) return;
     setMessage('');
+    setError('');
     try {
       await restaurantsService.remove(id);
       setMessage(`Deleted ${name}`);
+      if (editor?.kind === 'restaurant' && editor.mode === 'edit' && editor.item.id === id) {
+        setEditor(null);
+      }
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Delete failed');
@@ -88,9 +98,14 @@ export function AdminDashboard() {
 
   async function removeRecipe(id: string, name: string) {
     if (!window.confirm(`Delete recipe “${name}”?`)) return;
+    setMessage('');
+    setError('');
     try {
       await recipesService.remove(id);
       setMessage(`Deleted ${name}`);
+      if (editor?.kind === 'recipe' && editor.mode === 'edit' && editor.item.id === id) {
+        setEditor(null);
+      }
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Delete failed');
@@ -99,12 +114,98 @@ export function AdminDashboard() {
 
   async function removeBread(id: string, name: string) {
     if (!window.confirm(`Delete bread “${name}”?`)) return;
+    setMessage('');
+    setError('');
     try {
       await breadsService.remove(id);
       setMessage(`Deleted ${name}`);
+      if (editor?.kind === 'bread' && editor.mode === 'edit' && editor.item.id === id) {
+        setEditor(null);
+      }
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Delete failed');
+    }
+  }
+
+  async function saveRestaurant(payload: Record<string, unknown>) {
+    if (!editor || editor.kind !== 'restaurant') return;
+    setSaving(true);
+    setError('');
+    setMessage('');
+    try {
+      if (editor.mode === 'create') {
+        const created = await restaurantsService.create(
+          payload as Parameters<typeof restaurantsService.create>[0]
+        );
+        setMessage(`Created restaurant “${created.name}”`);
+      } else {
+        const updated = await restaurantsService.update(
+          editor.item.id,
+          payload as Parameters<typeof restaurantsService.update>[1]
+        );
+        setMessage(`Updated restaurant “${updated.name}”`);
+      }
+      setEditor(null);
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not save restaurant');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function saveRecipe(payload: Record<string, unknown>) {
+    if (!editor || editor.kind !== 'recipe') return;
+    setSaving(true);
+    setError('');
+    setMessage('');
+    try {
+      if (editor.mode === 'create') {
+        const created = await recipesService.create(
+          payload as Parameters<typeof recipesService.create>[0]
+        );
+        setMessage(`Created recipe “${created.name}”`);
+      } else {
+        const updated = await recipesService.update(
+          editor.item.id,
+          payload as Parameters<typeof recipesService.update>[1]
+        );
+        setMessage(`Updated recipe “${updated.name}”`);
+      }
+      setEditor(null);
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not save recipe');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function saveBread(payload: Record<string, unknown>) {
+    if (!editor || editor.kind !== 'bread') return;
+    setSaving(true);
+    setError('');
+    setMessage('');
+    try {
+      if (editor.mode === 'create') {
+        const created = await breadsService.create(
+          payload as Parameters<typeof breadsService.create>[0]
+        );
+        setMessage(`Created bread “${created.name}”`);
+      } else {
+        const updated = await breadsService.update(
+          editor.item.id,
+          payload as Parameters<typeof breadsService.update>[1]
+        );
+        setMessage(`Updated bread “${updated.name}”`);
+      }
+      setEditor(null);
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not save bread');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -121,7 +222,9 @@ export function AdminDashboard() {
   return (
     <section className="page-shell py-12">
       <h1 className="font-extrabold tracking-tight text-4xl">Admin dashboard</h1>
-      <p className="mt-2 text-muted">Catalogue statistics, database setup, and destructive CRUD.</p>
+      <p className="mt-2 text-muted">
+        Manage restaurants, recipes, and breads — plus database migrate/seed tools.
+      </p>
       {error ? (
         <div className="mt-4">
           <ErrorState message={error} onRetry={() => void load()} />
@@ -144,7 +247,7 @@ export function AdminDashboard() {
           </div>
           <Button variant="outline" size="sm" disabled={dbBusy || loading} onClick={() => void load()}>
             <RefreshCw size={14} aria-hidden />
-            Refresh stats
+            Refresh
           </Button>
         </div>
 
@@ -215,21 +318,50 @@ export function AdminDashboard() {
         </div>
       ) : null}
 
+      {editor ? (
+        <CatalogEditorPanel
+          editor={editor}
+          saving={saving}
+          onCancel={() => setEditor(null)}
+          onSaveRestaurant={saveRestaurant}
+          onSaveRecipe={saveRecipe}
+          onSaveBread={saveBread}
+        />
+      ) : null}
+
       <div className="mt-12 grid gap-8 lg:grid-cols-3">
         <AdminList
           title="Restaurants"
-          rows={restaurants.map((r) => ({ id: r.id, name: r.name, meta: r.city }))}
-          onDelete={removeRestaurant}
+          onAdd={() => setEditor({ kind: 'restaurant', mode: 'create' })}
+          rows={restaurants.map((r) => ({
+            id: r.id,
+            name: r.name,
+            meta: `${r.city} · ${r.priceRange}`,
+            onEdit: () => setEditor({ kind: 'restaurant', mode: 'edit', item: r }),
+            onDelete: () => void removeRestaurant(r.id, r.name),
+          }))}
         />
         <AdminList
           title="Recipes"
-          rows={recipes.map((r) => ({ id: r.id, name: r.name, meta: r.difficulty }))}
-          onDelete={removeRecipe}
+          onAdd={() => setEditor({ kind: 'recipe', mode: 'create' })}
+          rows={recipes.map((r) => ({
+            id: r.id,
+            name: r.name,
+            meta: r.difficulty,
+            onEdit: () => setEditor({ kind: 'recipe', mode: 'edit', item: r }),
+            onDelete: () => void removeRecipe(r.id, r.name),
+          }))}
         />
         <AdminList
           title="Breads"
-          rows={breads.map((b) => ({ id: b.id, name: b.name, meta: `#${b.number}` }))}
-          onDelete={removeBread}
+          onAdd={() => setEditor({ kind: 'bread', mode: 'create' })}
+          rows={breads.map((b) => ({
+            id: b.id,
+            name: b.name,
+            meta: `#${b.number} · ${b.category}`,
+            onEdit: () => setEditor({ kind: 'bread', mode: 'edit', item: b }),
+            onDelete: () => void removeBread(b.id, b.name),
+          }))}
         />
       </div>
     </section>
@@ -239,27 +371,48 @@ export function AdminDashboard() {
 function AdminList({
   title,
   rows,
-  onDelete,
+  onAdd,
 }: {
   title: string;
-  rows: { id: string; name: string; meta: string }[];
-  onDelete: (id: string, name: string) => Promise<void>;
+  onAdd: () => void;
+  rows: {
+    id: string;
+    name: string;
+    meta: string;
+    onEdit: () => void;
+    onDelete: () => void;
+  }[];
 }) {
   return (
     <div className="rounded-2xl border border-line bg-bg-elevated p-4">
-      <h2 className="font-extrabold tracking-tight text-2xl">{title}</h2>
-      <ul className="mt-4 max-h-96 space-y-2 overflow-y-auto">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <h2 className="font-extrabold tracking-tight text-2xl">{title}</h2>
+        <Button type="button" variant="outline" size="sm" onClick={onAdd}>
+          <Plus size={14} aria-hidden />
+          Add
+        </Button>
+      </div>
+      <ul className="max-h-96 space-y-2 overflow-y-auto">
         {rows.map((row) => (
-          <li key={row.id} className="flex items-center justify-between gap-2 border-b border-line py-2 text-sm">
-            <div>
-              <p className="font-medium">{row.name}</p>
+          <li
+            key={row.id}
+            className="flex items-center justify-between gap-2 border-b border-line py-2 text-sm"
+          >
+            <div className="min-w-0">
+              <p className="truncate font-medium">{row.name}</p>
               <p className="text-xs text-muted">{row.meta}</p>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => void onDelete(row.id, row.name)}>
-              Delete
-            </Button>
+            <div className="flex shrink-0 gap-1">
+              <Button variant="ghost" size="sm" onClick={row.onEdit}>
+                Edit
+              </Button>
+              <Button variant="ghost" size="sm" onClick={row.onDelete}>
+                Delete
+              </Button>
+            </div>
           </li>
         ))}
+        {rows.length === 0 ? <li className="py-3 text-sm text-muted">No items yet.</li> : null}
       </ul>
     </div>
   );
