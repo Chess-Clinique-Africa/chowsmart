@@ -16,8 +16,8 @@ interface AuthContextValue {
   loading: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
+  register: (name: string, email: string, password: string) => Promise<User>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -54,12 +54,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const data = await authService.login({ email, password });
     setToken(data.token);
     setUser(data.user);
+    return data.user;
   }, []);
 
   const register = useCallback(async (name: string, email: string, password: string) => {
     const data = await authService.register({ name, email, password });
     setToken(data.token);
     setUser(data.user);
+    return data.user;
   }, []);
 
   const logout = useCallback(async () => {

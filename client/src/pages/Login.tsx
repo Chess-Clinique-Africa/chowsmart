@@ -31,8 +31,9 @@ export function Login() {
   async function onSubmit(values: FormValues) {
     setError('');
     try {
-      await login(values.email, values.password);
-      navigate(from, { replace: true });
+      const user = await login(values.email, values.password);
+      const destination = user.role === 'ADMIN' ? '/admin' : from;
+      navigate(destination, { replace: true });
     } catch (err) {
       setError(err instanceof ApiClientError ? err.message : 'Login failed');
     }
