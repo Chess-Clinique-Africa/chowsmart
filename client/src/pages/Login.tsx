@@ -69,6 +69,11 @@ export function Login() {
           Demo admin: admin@chowsmart.app / Admin123!
           <br />
           Demo user: user@chowsmart.app / User1234!
+          <br />
+          Empty database?{' '}
+          <Link to="/setup" className="underline">
+            Run migrate + seed
+          </Link>
         </p>
       </form>
     </section>

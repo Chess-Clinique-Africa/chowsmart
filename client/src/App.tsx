@@ -15,6 +15,7 @@ import { Register } from './pages/Register';
 import { Profile } from './pages/Profile';
 import { Favorites } from './pages/Favorites';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { DatabaseSetup } from './pages/DatabaseSetup';
 import { Search } from './pages/Search';
 import { NotFound } from './pages/NotFound';
 
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="search" element={<Search />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="setup" element={<DatabaseSetup />} />
         <Route
           path="profile"
           element={
