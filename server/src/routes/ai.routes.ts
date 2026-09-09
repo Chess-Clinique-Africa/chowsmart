@@ -27,7 +27,7 @@ router.post('/chat', async (req, res, next) => {
     const contextText = context
       ? `\nCurrent preferences: destination=${context.destination || 'any'}, people=${context.people || 'unspecified'}, diet=${context.diet || 'any'}.`
       : '';
-    const response = await fetch('https://api.openai.com/v1/responses', {
+    const response = await fetch('https://agentrouter.org/v1', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${env.openAiApiKey}`,
