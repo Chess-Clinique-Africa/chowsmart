@@ -8,7 +8,7 @@ export function Hero() {
   const navigate = useNavigate();
 
   return (
-    <section className="page-shell grid items-center gap-12 pb-14 pt-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pb-20 lg:pt-12">
+    <section className="page-shell grid items-center gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-[120px]">
       <motion.div
         initial={reduce ? false : { opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
@@ -17,17 +17,17 @@ export function Hero() {
       >
         <div>
           <p className="mb-6 text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-muted">
-            ChowSmart by PCTL
+            Thoughtful menus, wherever you are
           </p>
           <h1 className="max-w-[11ch] text-[3rem] leading-[1.02] text-ink sm:text-[3.5rem] lg:text-[4rem]">
             <span className="block font-extrabold tracking-[-0.045em]">Your next meal.</span>
-            <span className="font-serif-italic mt-1 block text-[2.85rem] text-ink sm:text-[3.35rem] lg:text-[3.85rem]">
+            <span className="font-serif-italic mt-1 block text-[2.85rem] text-accent sm:text-[3.35rem] lg:text-5xl">
               A little smarter.
             </span>
           </h1>
           <p className="mt-7 max-w-[34rem] text-[1.05rem] leading-relaxed text-muted">
-            Explore local flavours, discover restaurant menus and turn good food ideas into a
-            practical kitchen plan.
+            Discover global flavours, compare restaurant menus and turn good food ideas into a
+            practical plan for your table.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Button size="lg" onClick={() => navigate('/menu-studio')}>
@@ -40,7 +40,13 @@ export function Hero() {
             </Button>
           </div>
         </div>
-        <p className="mt-14 text-sm text-muted/75">Rooted in Lagos. Curious about the world.</p>
+        <div className="mt-14 grid gap-3 border-t border-line pt-5 sm:grid-cols-3">
+          {['Dietary-Aware', 'Fresh & Halal Options', 'Fast Menu Planning'].map((badge) => (
+            <span key={badge} className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+              {badge}
+            </span>
+          ))}
+        </div>
       </motion.div>
 
       <motion.div

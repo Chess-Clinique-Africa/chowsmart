@@ -1,7 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
 import {
-  ArrowRight,
   ArrowUpRight,
   ChefHat,
   Earth,
@@ -9,62 +7,13 @@ import {
   Mic,
   Wheat,
 } from 'lucide-react';
+import { Hero } from '@/components/Hero/Hero';
 import { FadeIn, Stagger, StaggerItem } from '@/components/Motion/FadeIn';
-import { easeOut } from '@/utils/motion';
 
 export function Home() {
-  const reduce = useReducedMotion();
-
   return (
     <div className="cs-landing-home">
-      <section className="cs-hero">
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: easeOut }}
-        >
-          <p className="cs-overline">CHOWSMART BY PCTL</p>
-          <h1>
-            Your next meal.
-            <br />
-            <em>A little smarter.</em>
-          </h1>
-          <p className="cs-lead">
-            Explore local flavours, compare restaurant menus and turn kitchen inspiration into a
-            practical plan you can actually cook.
-          </p>
-          <div className="cs-actions">
-            <Link to="/menu-studio" className="cs-primary">
-              Explore the menu studio <ArrowRight size={18} aria-hidden />
-            </Link>
-            <Link to="/restaurants" className="cs-secondary">
-              Find restaurant menus <MapPin size={17} aria-hidden />
-            </Link>
-          </div>
-          <div className="cs-hero-meta" aria-label="Key features">
-            <span className="cs-meta-pill">Dietary-aware</span>
-            <span className="cs-meta-pill">Fast menu planning</span>
-            <span className="cs-meta-pill">Local + global</span>
-          </div>
-          <p className="cs-origin">Rooted in Lagos. Curious about the world.</p>
-        </motion.div>
-        <motion.div
-          className="cs-hero-image"
-          initial={reduce ? false : { opacity: 0, y: 16, scale: 0.985 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.12, ease: easeOut }}
-        >
-          <img
-            src="/menus/world/NG.webp"
-            alt="Illustrated Nigerian jollof, moi moi and vegetable menu"
-          />
-          <div className="cs-image-caption">
-            <span>NIGERIAN INSPIRATION</span>
-            <b>Good food starts with a good idea.</b>
-            <small>AI-generated serving illustration</small>
-          </div>
-        </motion.div>
-      </section>
+      <Hero />
 
       <FadeIn className="cs-capabilities" delay={0.05} y={12}>
         <span>

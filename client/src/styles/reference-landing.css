@@ -601,6 +601,18 @@ html body .app-navigation {
   box-shadow: 0 3px 12px #14352a04;
 }
 
+html .app-nav-search {
+  width: min(260px, 24vw);
+  margin-left: auto;
+}
+
+html .app-nav-search input {
+  min-height: 42px;
+  border-radius: 999px;
+  background: #f4f7f4;
+  border-color: #e0e9e2;
+}
+
 html .app-navigation a {
   text-decoration: none;
 }
@@ -940,6 +952,9 @@ html .app-skip:focus {
   html .app-desktop-nav {
     display: none;
   }
+  html .app-nav-search {
+    display: none;
+  }
   html .app-mobile-menu {
     display: flex;
   }
@@ -1069,6 +1084,42 @@ html .app-skip:focus {
   .cs-lead {
     font-size: 17px;
   }
+}
+
+.cs-footer > .page-shell {
+  width: 100%;
+}
+
+.cs-footer h2 {
+  margin: 0 0 16px;
+  color: #152d29;
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+.cs-footer > .page-shell > div:not(:first-child) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.cs-footer > .page-shell > div:not(:first-child) a,
+.cs-footer > .page-shell > div:not(:first-child) span {
+  color: #718076;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cs-footer > .page-shell > div:not(:first-child) a:hover {
+  color: #087f5b;
+}
+
+.cs-footer-note {
+  margin-top: 8px;
+  color: #9aa59d !important;
 }
 
 @media (width <= 600px) {

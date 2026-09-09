@@ -14,6 +14,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { SearchBar } from '@/components/SearchBar/SearchBar';
 import { softSpring, staggerChildren, fadeUp } from '@/utils/motion';
 
 const links: { to: string; label: string; Icon: LucideIcon }[] = [
@@ -87,6 +88,10 @@ export function Navbar() {
           ))}
         </nav>
 
+        <div className="app-nav-search">
+          <SearchBar placeholder="Search restaurants, menus, recipes..." />
+        </div>
+
         <div className="app-nav-actions">
           {onMenuStudio ? (
             <button
@@ -107,11 +112,13 @@ export function Navbar() {
           )}
           {user ? (
             <button type="button" className="app-auth-action" onClick={() => void handleLogout()}>
-              Log out
+              <span className="hidden sm:inline">Log out</span>
+              <span className="sm:hidden">Account</span>
             </button>
           ) : (
             <Link to="/login" className="app-auth-action" onClick={() => setOpen(false)}>
-              Log in
+              <span className="hidden sm:inline">Log in</span>
+              <span className="sm:hidden">Account</span>
             </Link>
           )}
           <button

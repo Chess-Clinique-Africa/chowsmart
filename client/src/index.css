@@ -15,8 +15,8 @@
   --success: #087f5b;
   --radius: 0.75rem;
   --shadow: 0 20px 60px rgba(8, 127, 91, 0.08);
-  --font-display: Georgia, "Times New Roman", serif;
-  --font-body: "Manrope", Arial, sans-serif;
+  --font-display: "Clash Display", "Manrope", Georgia, serif;
+  --font-body: Inter, "Manrope", Arial, sans-serif;
 }
 
 @theme {
@@ -66,9 +66,9 @@
   body {
     margin: 0;
     min-height: 100vh;
-    background: #f7f9f8;
+    background: var(--bg);
     color: var(--ink-soft);
-    font-family: var(--font-body);
+    font-family: var(--font-display);
     font-weight: 500;
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
@@ -114,6 +114,14 @@
 @layer utilities {
   .page-shell {
     @apply mx-auto w-full max-w-[1180px] px-5 sm:px-8;
+  }
+
+  .section-space {
+    @apply py-16 lg:py-[120px];
+  }
+
+  .premium-card {
+    @apply border border-line bg-bg-elevated shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md;
   }
 
   .editorial-rule {
