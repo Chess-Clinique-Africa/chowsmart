@@ -13,6 +13,6 @@ export const env = {
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
   nodeEnv: process.env.NODE_ENV || 'development',
   isProd: process.env.NODE_ENV === 'production',
-  openAiApiKey: process.env.OPENAI_API_KEY || '',
-  openAiModel: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+  agentRouterApiKey: process.env.AGENTROUTER_API_KEY || process.env.OPENAI_API_KEY || '',
+  agentRouterModel: process.env.AGENTROUTER_MODEL || process.env.OPENAI_MODEL || 'gpt-4o-mini',
 };
