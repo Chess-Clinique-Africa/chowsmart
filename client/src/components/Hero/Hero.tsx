@@ -8,18 +8,18 @@ export function Hero() {
   const navigate = useNavigate();
 
   return (
-    <section className="page-shell grid items-center gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-[120px]">
+    <section className="page-shell cs-hero-home grid items-center gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-[120px]">
       <motion.div
         initial={reduce ? false : { opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55 }}
-        className="flex min-h-[420px] flex-col justify-between lg:min-h-[520px]"
+        className="cs-hero-copy flex min-h-[420px] flex-col justify-between lg:min-h-[520px]"
       >
         <div>
           <p className="mb-6 text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-muted">
             Thoughtful menus, wherever you are
           </p>
-          <h1 className="max-w-[11ch] text-[3rem] leading-[1.02] text-ink sm:text-[3.5rem] lg:text-[4rem]">
+          <h1 className="cs-hero-title max-w-[11ch] text-[3rem] leading-[1.02] text-ink sm:text-[3.5rem] lg:text-[4rem]">
             <span className="block font-extrabold tracking-[-0.045em]">Your next meal.</span>
             <span className="font-serif-italic mt-1 block text-[2.85rem] text-accent sm:text-[3.35rem] lg:text-5xl">
               A little smarter.
@@ -29,7 +29,7 @@ export function Hero() {
             Discover global flavours, compare restaurant menus and turn good food ideas into a
             practical plan for your table.
           </p>
-          <div className="mt-9 flex flex-wrap gap-3">
+          <div className="cs-hero-actions mt-9 flex flex-wrap gap-3">
             <Button size="lg" onClick={() => navigate('/menu-studio')}>
               Explore the menu studio
               <ArrowRight className="h-4 w-4" aria-hidden />
@@ -53,7 +53,7 @@ export function Hero() {
         initial={reduce ? false : { opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.65, delay: 0.1 }}
-        className="relative"
+        className="cs-hero-art relative"
       >
         <div className="relative overflow-hidden rounded-[28px] bg-[#eceeea] shadow-soft">
           <img

@@ -1134,16 +1134,107 @@ html .app-skip:focus {
 
 @media (width <= 520px) {
   html body .app-navigation {
-    padding: 12px 16px;
+    height: 64px;
+    min-height: 64px;
+    padding: 8px 14px;
   }
+  html .app-navigation .chowsmart-identity { gap: 6px; }
+  html .app-navigation .chowsmart-identity > img { width: 34px !important; height: 34px !important; }
+  html .app-navigation .chowsmart-identity .identity-name { font-size: 20px; letter-spacing: -0.8px; }
+  html .app-navigation .chowsmart-identity small { display: none !important; }
   html .app-quick-action {
     display: none;
   }
   html .app-auth-action {
-    min-height: 38px;
-    padding: 8px 10px;
+    min-height: 36px;
+    padding: 7px 9px;
     font-size: 12px;
   }
+  html .app-mobile-menu { width: 40px; height: 40px; }
+}
+
+@media (width <= 430px) {
+  html .app-auth-action { display: none; }
+  html .app-nav-actions { gap: 7px; }
+}
+
+@media (width <= 800px) {
+  .cs-hero-home {
+    gap: 34px;
+    padding-top: 42px;
+    padding-bottom: 48px;
+  }
+
+  .cs-hero-copy {
+    min-height: auto;
+  }
+
+  .cs-hero-title {
+    max-width: 9ch;
+    font-size: clamp(2.8rem, 12vw, 4rem);
+  }
+
+  .cs-hero-actions {
+    margin-top: 28px;
+    gap: 10px;
+  }
+
+  .cs-hero-actions > * {
+    flex: 1 1 100%;
+    min-height: 50px;
+  }
+
+  .cs-hero-copy > .mt-14 {
+    margin-top: 32px;
+  }
+
+  .cs-hero-art > div {
+    border-radius: 22px;
+  }
+
+  .cs-hero-art img {
+    aspect-ratio: 4 / 3;
+  }
+
+  .cs-hero-art button {
+    right: 20px;
+    bottom: -18px;
+    width: 48px;
+    height: 48px;
+  }
+}
+
+@media (width <= 650px) {
+  .cs-capabilities {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 14px 0;
+  }
+
+  .cs-capabilities span {
+    min-width: 0;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 7px;
+    font-size: 10px;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .cs-capabilities span:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .cs-section-title h2,
+  .cs-bread h2,
+  .cs-trust h2,
+  .cs-pctl h2 {
+    font-size: clamp(2rem, 9vw, 2.7rem);
+  }
+
+  .cs-path > div { padding: 20px; }
+  .cs-path p { margin: 12px 0 18px; font-size: 13px; }
 }
 
 /* Shared cinematic treatment for the product surfaces. */
