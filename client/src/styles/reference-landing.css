@@ -1237,6 +1237,127 @@ html .app-skip:focus {
   .cs-path p { margin: 12px 0 18px; font-size: 13px; }
 }
 
+@media (width <= 800px) {
+  html body .cs-landing,
+  html body .cs-landing-home,
+  html body #app-content,
+  html body #app-content > * {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  html body .page-shell {
+    padding-inline: 16px;
+  }
+
+  html body .directory-main,
+  html body .disc-main,
+  html body .k-main,
+  html body .world-main {
+    width: 100%;
+    max-width: 100%;
+    padding-inline: 16px;
+  }
+
+  html body .directory-header,
+  html body .world-header,
+  html body .k-header {
+    width: 100%;
+    max-width: 100%;
+    padding-inline: 16px;
+  }
+
+  html body .directory-search,
+  html body .directory-heading,
+  html body .intro,
+  html body .world-layout,
+  html body .k-layout {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  html body .directory-search {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  html body .directory-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  html body .directory-facts {
+    flex-wrap: wrap;
+    gap: 14px 22px;
+  }
+
+  html body .directory-facts > span {
+    max-width: none;
+    flex: 1 1 28%;
+  }
+
+  html body .directory-tab-list {
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  html body .directory-tab-list::-webkit-scrollbar,
+  html body .k-tablist::-webkit-scrollbar {
+    display: none;
+  }
+
+  html body .directory-choice,
+  html body .directory-query,
+  html body .directory-query > div,
+  html body .directory-choice select,
+  html body .k-pick select {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  html body .world-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  html body .world-settings {
+    width: 100%;
+  }
+
+  html body .k-pick select {
+    width: 100%;
+  }
+
+  html body .k-lab-nutrition {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  html body pre,
+  html body code {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+@media (width <= 430px) {
+  html body .directory-main,
+  html body .disc-main,
+  html body .k-main,
+  html body .world-main,
+  html body .page-shell {
+    padding-inline: 14px;
+  }
+
+  html body .directory-facts > span {
+    flex-basis: 40%;
+  }
+
+  html body .k-lab-nutrition {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* Shared cinematic treatment for the product surfaces. */
 .cs-landing {
   position: relative;
