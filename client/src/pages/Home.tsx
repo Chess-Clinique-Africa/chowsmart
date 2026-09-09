@@ -30,8 +30,8 @@ export function Home() {
             <em>A little smarter.</em>
           </h1>
           <p className="cs-lead">
-            Explore local flavours, discover restaurant menus and turn good food ideas into a
-            practical kitchen plan.
+            Explore local flavours, compare restaurant menus and turn kitchen inspiration into a
+            practical plan you can actually cook.
           </p>
           <div className="cs-actions">
             <Link to="/menu-studio" className="cs-primary">
@@ -40,6 +40,11 @@ export function Home() {
             <Link to="/restaurants" className="cs-secondary">
               Find restaurant menus <MapPin size={17} aria-hidden />
             </Link>
+          </div>
+          <div className="cs-hero-meta" aria-label="Key features">
+            <span className="cs-meta-pill">Dietary-aware</span>
+            <span className="cs-meta-pill">Fast menu planning</span>
+            <span className="cs-meta-pill">Local + global</span>
           </div>
           <p className="cs-origin">Rooted in Lagos. Curious about the world.</p>
         </motion.div>

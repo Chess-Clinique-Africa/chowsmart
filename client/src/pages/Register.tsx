@@ -30,7 +30,7 @@ export function Register() {
     setError('');
     try {
       await registerUser(values.name, values.email, values.password);
-      navigate('/profile');
+      navigate('/profile', { replace: true });
     } catch (err) {
       setError(err instanceof ApiClientError ? err.message : 'Registration failed');
     }

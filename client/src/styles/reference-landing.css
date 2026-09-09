@@ -28,21 +28,23 @@
 
 .cs-landing {
   color: #153c30;
-  background: #fff;
+  background:
+    radial-gradient(circle at top left, rgba(11, 128, 92, 0.09), transparent 28%),
+    linear-gradient(180deg, #fffefa 0%, #f8faf7 100%);
   font-family: var(--font-brand);
 }
 
 .cs-landing-home {
   max-width: 1380px;
   margin: auto;
-  padding: 0 5%;
+  padding: 0 clamp(20px, 3vw, 56px);
 }
 
 .cs-hero {
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.08fr 0.92fr;
   align-items: center;
-  gap: 55px;
-  padding: 55px 0;
+  gap: clamp(28px, 4vw, 56px);
+  padding: clamp(32px, 4vw, 78px) 0 54px;
   display: grid;
 }
 
@@ -73,8 +75,9 @@
 .cs-lead {
   color: #65756a;
   margin: 25px 0;
-  font-size: 19px;
+  font-size: clamp(1.05rem, 1.7vw, 1.25rem);
   line-height: 1.7;
+  max-width: 620px;
 }
 
 .cs-actions {
@@ -83,13 +86,34 @@
   display: flex;
 }
 
+.cs-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cs-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 8px 12px;
+  border: 1px solid rgba(8, 127, 91, 0.18);
+  background: rgba(232, 247, 239, 0.8);
+  color: #1b5d46;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 .cs-primary,
 .cs-secondary {
-  border-radius: 8px;
+  border-radius: 12px;
   justify-content: center;
   align-items: center;
   gap: 10px;
-  min-height: 48px;
+  min-height: 50px;
   padding: 14px 20px;
   font-size: 14px;
   font-weight: 700;
@@ -105,13 +129,14 @@
 
 .cs-primary {
   color: #fff;
-  background: #15593e;
+  background: linear-gradient(135deg, #15593e 0%, #0d7d5b 100%);
+  box-shadow: 0 14px 28px rgba(21, 89, 62, 0.18);
 }
 
 .cs-primary:hover {
-  background: #0c412b;
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(21, 89, 62, 0.22);
+  background: linear-gradient(135deg, #0f4836 0%, #0a684b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(21, 89, 62, 0.24);
 }
 
 .cs-primary:active,
@@ -121,13 +146,14 @@
 
 .cs-secondary {
   color: #21563a;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.8);
   border: 1px solid #c8d6c9;
 }
 
 .cs-secondary:hover {
   background: #f7faf7;
   transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(17, 53, 41, 0.06);
 }
 
 .cs-origin {
@@ -137,10 +163,12 @@
 }
 
 .cs-hero-image {
-  border-radius: 18px;
-  height: 470px;
+  border-radius: 24px;
+  height: clamp(340px, 42vw, 500px);
   position: relative;
   overflow: hidden;
+  box-shadow: 0 26px 60px rgba(19, 49, 41, 0.12);
+  border: 1px solid rgba(177, 197, 181, 0.7);
 }
 
 .cs-hero-image > img {
@@ -151,7 +179,7 @@
 }
 
 .cs-hero-image:hover > img {
-  transform: scale(1.03);
+  transform: scale(1.04);
 }
 
 .cs-image-caption {
@@ -183,12 +211,12 @@
 
 .cs-capabilities {
   color: #60765e;
-  border-top: 1px solid #dfe7de;
-  border-bottom: 1px solid #dfe7de;
+  border-top: 1px solid rgba(142, 165, 146, 0.45);
+  border-bottom: 1px solid rgba(142, 165, 146, 0.45);
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 20px;
-  padding: 22px 0;
+  gap: 16px 20px;
+  padding: 20px 0;
   display: flex;
 }
 
@@ -197,6 +225,10 @@
   gap: 10px;
   font-size: 13px;
   display: flex;
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(204, 221, 205, 0.8);
 }
 
 .cs-section {
@@ -233,9 +265,9 @@
 }
 
 .cs-path {
-  background: #fff;
-  border: 1px solid #dfe7db;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(205, 222, 208, 0.9);
+  border-radius: 18px;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
@@ -244,11 +276,12 @@
     border-color 0.25s ease,
     box-shadow 0.3s ease,
     transform 0.3s ease;
+  backdrop-filter: blur(8px);
 }
 
 .cs-path:hover {
-  border-color: #c5d5c4;
-  box-shadow: 0 16px 40px rgba(8, 127, 91, 0.1);
+  border-color: rgba(8, 127, 91, 0.35);
+  box-shadow: 0 22px 46px rgba(8, 127, 91, 0.12);
   transform: translateY(-4px);
 }
 
@@ -895,6 +928,10 @@ html .app-skip:focus {
 }
 
 @media (width <= 800px) {
+  .cs-landing-home {
+    padding: 0 18px;
+  }
+
   html body .app-navigation {
     height: 76px;
     min-height: 76px;
@@ -966,10 +1003,22 @@ html .app-skip:focus {
 @media (width <= 650px) {
   .cs-hero {
     grid-template-columns: 1fr;
-    padding: 35px 0;
+    padding: 28px 0 38px;
   }
   .cs-hero h1 {
-    font-size: 48px;
+    font-size: clamp(2.6rem, 12vw, 3.3rem);
+  }
+  .cs-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .cs-primary,
+  .cs-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+  .cs-hero-meta {
+    margin-top: 16px;
   }
   .cs-hero-image {
     height: 340px;

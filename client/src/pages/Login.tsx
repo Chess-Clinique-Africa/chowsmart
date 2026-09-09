@@ -32,7 +32,7 @@ export function Login() {
     setError('');
     try {
       const user = await login(values.email, values.password);
-      const destination = user.role === 'ADMIN' ? '/admin' : from;
+      const destination = user.role === 'ADMIN' ? '/admin' : from === '/' ? '/profile' : from;
       navigate(destination, { replace: true });
     } catch (err) {
       setError(err instanceof ApiClientError ? err.message : 'Login failed');
