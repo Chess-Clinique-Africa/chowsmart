@@ -1145,3 +1145,191 @@ html .app-skip:focus {
     font-size: 12px;
   }
 }
+
+/* Shared cinematic treatment for the product surfaces. */
+.cs-landing {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 84% 4%, rgba(8, 127, 91, 0.08), transparent 24rem),
+    linear-gradient(180deg, #fbfcf8 0%, #f5f8f3 55%, #eef4ee 100%);
+}
+
+.cs-landing::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.22;
+  background-image: radial-gradient(rgba(21, 45, 41, 0.16) 0.55px, transparent 0.55px);
+  background-size: 5px 5px;
+  mix-blend-mode: multiply;
+}
+
+html body .app-navigation {
+  height: 82px;
+  min-height: 82px;
+  background: rgba(255, 254, 251, 0.84);
+  border-bottom-color: rgba(177, 199, 184, 0.55);
+  box-shadow: 0 12px 38px rgba(19, 42, 37, 0.06);
+}
+
+html .app-desktop-nav a {
+  color: #5c7065;
+  border-radius: 999px;
+  transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+html .app-desktop-nav a:hover {
+  color: #07533d;
+  background: rgba(8, 127, 91, 0.08);
+  transform: translateY(-1px);
+}
+
+html .app-desktop-nav a[aria-current='page'] {
+  color: #07533d;
+  background: #e3f2e8;
+}
+
+html .app-nav-search input {
+  min-height: 44px;
+  background: rgba(243, 247, 242, 0.86);
+  border-color: rgba(177, 199, 184, 0.7);
+  box-shadow: inset 0 1px 1px rgba(19, 42, 37, 0.03);
+}
+
+html .app-quick-action {
+  min-height: 44px;
+  border-radius: 999px;
+  padding-inline: 18px;
+  background: linear-gradient(135deg, #07533d, #0b956b);
+  box-shadow: 0 10px 24px rgba(8, 127, 91, 0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+html .app-quick-action:hover {
+  background: linear-gradient(135deg, #064733, #087f5b);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(8, 127, 91, 0.24);
+}
+
+.cs-landing-home {
+  position: relative;
+}
+
+.cs-landing-home > .page-shell:first-child {
+  position: relative;
+}
+
+.cs-landing-home > .page-shell:first-child::after {
+  content: '';
+  position: absolute;
+  top: 12%;
+  right: -5%;
+  width: 30vw;
+  height: 30vw;
+  max-width: 420px;
+  max-height: 420px;
+  border: 1px solid rgba(8, 127, 91, 0.12);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cs-path,
+.cs-bread,
+.cs-pctl {
+  box-shadow: 0 22px 58px rgba(19, 42, 37, 0.07);
+}
+
+.cs-path {
+  border-color: rgba(177, 199, 184, 0.72);
+  border-radius: 22px;
+  background: rgba(255, 254, 251, 0.78);
+}
+
+.cs-path:hover {
+  border-color: rgba(8, 127, 91, 0.42);
+  box-shadow: 0 26px 62px rgba(19, 72, 53, 0.14);
+}
+
+.cs-path > img {
+  filter: saturate(0.92) contrast(1.03);
+}
+
+.cs-bread,
+.cs-pctl {
+  border: 1px solid rgba(177, 199, 184, 0.5);
+  background:
+    linear-gradient(135deg, rgba(235, 245, 235, 0.96), rgba(248, 250, 244, 0.76)),
+    #eef4eb;
+}
+
+.cs-voice {
+  border-color: rgba(177, 199, 184, 0.6);
+}
+
+.cs-voice-icon {
+  color: #07533d;
+  background: linear-gradient(145deg, #dff2e6, #f0f8ef);
+  box-shadow: 0 12px 28px rgba(8, 127, 91, 0.1);
+}
+
+.cs-footer {
+  background: rgba(255, 254, 251, 0.72);
+  border-top-color: rgba(177, 199, 184, 0.62);
+  backdrop-filter: blur(16px);
+}
+
+@media (width <= 800px) {
+  html body .app-navigation {
+    height: 72px;
+    min-height: 72px;
+    padding-inline: 16px;
+  }
+
+  html .app-mobile-dock {
+    background: rgba(255, 254, 251, 0.9);
+    border-top-color: rgba(177, 199, 184, 0.7);
+    box-shadow: 0 -12px 34px rgba(19, 42, 37, 0.09);
+  }
+
+  html .app-mobile-dock a {
+    min-height: 52px;
+    border-radius: 14px;
+    transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  html .app-mobile-dock a:active {
+    transform: scale(0.96);
+  }
+
+  .cs-landing-home {
+    padding-inline: 16px;
+  }
+
+  .cs-landing-home > .page-shell:first-child::after {
+    top: 18%;
+    right: -22%;
+    width: 68vw;
+    height: 68vw;
+  }
+}
+
+@media (width <= 650px) {
+  .cs-path,
+  .cs-bread,
+  .cs-pctl {
+    border-radius: 18px;
+    box-shadow: 0 16px 36px rgba(19, 42, 37, 0.07);
+  }
+
+  .cs-bread,
+  .cs-pctl {
+    padding: 22px;
+  }
+
+  .cs-footer {
+    padding-bottom: calc(104px + env(safe-area-inset-bottom));
+  }
+}
