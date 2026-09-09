@@ -20,21 +20,21 @@ router.post('/chat', async (req, res, next) => {
   try {
     const { message, context } = chatSchema.parse(req.body);
 
-    if (!env.agentRouterApiKey) {
+    if (!env.openAiApiKey) {
       throw new AppError('AI provider is not configured', 503, 'AI_PROVIDER_NOT_CONFIGURED');
     }
 
     const contextText = context
       ? `\nCurrent preferences: destination=${context.destination || 'any'}, people=${context.people || 'unspecified'}, diet=${context.diet || 'any'}.`
       : '';
-    const response = await fetch('https://agentrouter.org/v1/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${env.agentRouterApiKey}`,
+        Authorization: `Bearer ${env.openAiApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: env.agentRouterModel,
+        model: env.openAiModel,
         messages: [
           {
             role: 'system',
@@ -49,7 +49,16 @@ router.post('/chat', async (req, res, next) => {
 
     if (!response.ok) {
       const details = await response.text();
-      console.error('AgentRouter request failed', response.status, details);
+      console.error('OpenAI request failed', response.status, details);
+
+      if (response.status === 401 || response.status === 403) {
+        throw new AppError(
+          'The OpenAI API key was rejected. Check OPENAI_API_KEY.',
+          503,
+          'AI_PROVIDER_AUTH_ERROR'
+        );
+      }
+
       throw new AppError('The AI provider could not answer right now', 502, 'AI_PROVIDER_ERROR');
     }
 
