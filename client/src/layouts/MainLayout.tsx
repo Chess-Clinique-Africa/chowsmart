@@ -1,6 +1,6 @@
-import { Outlet } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar/Navbar';
 import { Footer } from '@/components/Footer/Footer';
+import { PageTransition } from '@/components/Motion/PageTransition';
 
 export function MainLayout() {
   return (
@@ -10,7 +10,7 @@ export function MainLayout() {
       </a>
       <Navbar />
       <main id="app-content" tabIndex={-1} className="flex-1">
-        <Outlet />
+        <PageTransition />
       </main>
       <Footer />
     </div>

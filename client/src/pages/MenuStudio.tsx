@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   ArrowUp,
   ArrowUpRight,
@@ -15,7 +16,9 @@ import { breadsService } from '@/services/breads';
 import { menuPlansService } from '@/services/menuPlans';
 import { recipesService } from '@/services/recipes';
 import { restaurantsService } from '@/services/restaurants';
+import { api, unwrap } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
+import { chatBubble, easeOut, tabPanel } from '@/utils/motion';
 import type { Bread, MenuPlan, Recipe } from '@/types';
 
 const DESTINATIONS = [
@@ -113,6 +116,7 @@ export function MenuStudio() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const reduce = useReducedMotion();
   const restaurantSlug = searchParams.get('restaurant');
 
   const [prefsOpen, setPrefsOpen] = useState(false);
@@ -301,8 +305,33 @@ export function MenuStudio() {
     setError('');
     setSaveNote('');
 
-    window.setTimeout(() => {
-      const plan = buildPlan(text);
+    const plan = buildPlan(text);
+    try {
+      const catalogue = recipes
+        .slice(0, 30)
+        .map((recipe) => `${recipe.name} (${recipe.cuisine?.name || 'mixed cuisine'})`)
+        .join(', ');
+      const providerReply = await unwrap<{ message: string }>(
+        api.post('/ai/chat', {
+          message: `${text}\nAvailable recipe catalogue: ${catalogue}`,
+          context: {
+            destination: destination.label,
+            people,
+            diet,
+          },
+        })
+      );
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `a-${Date.now()}`,
+          role: 'assistant',
+          text: `${providerReply.message}\n\n${plan.text}`,
+          planItems: plan.items,
+          planTitle: plan.title,
+        },
+      ]);
+    } catch (err) {
       setMessages((prev) => [
         ...prev,
         {
@@ -313,8 +342,10 @@ export function MenuStudio() {
           planTitle: plan.title,
         },
       ]);
+      setError(err instanceof Error ? `${err.message}. Showing local recipe suggestions.` : 'AI provider unavailable. Showing local recipe suggestions.');
+    } finally {
       setThinking(false);
-    }, 450);
+    }
   }
 
   async function deleteSavedPlan(id: string, name: string) {
@@ -409,7 +440,12 @@ export function MenuStudio() {
         }}
       />
       <div className="world-main">
-        <div className="world-intro">
+        <motion.div
+          className="world-intro"
+          initial={reduce ? false : { opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: easeOut }}
+        >
           <span className="eyebrow">
             <span /> LOCAL FLAVOURS. WORLDWIDE POSSIBILITIES.
           </span>
@@ -417,7 +453,7 @@ export function MenuStudio() {
             What’s on <span>your menu?</span>
           </h1>
           <p>Choose your cuisine and preferences, then type or speak to plan a meal.</p>
-        </div>
+        </motion.div>
 
         <div className="world-layout">
           <button
@@ -566,156 +602,200 @@ export function MenuStudio() {
               </button>
             </div>
 
-            {tab === 'create' ? (
-              <>
-                <div className="conversation" ref={conversationRef}>
-                  {messages.length === 0 ? (
-                    <div className="empty-conversation">
-                      <div className="studio-symbol">
-                        <Sparkles size={26} aria-hidden />
-                      </div>
-                      <h2>What are we cooking today?</h2>
-                      <p>
-                        Explore {destination.label}, plan a family meal,
-                        <br />
-                        or build a menu around what you already have.
-                      </p>
-                      <div className="prompt-chips">
-                        <button type="button" onClick={() => void handleSubmit(undefined, 'Plan a local dinner menu')}>
-                          Plan a local dinner menu <ArrowUpRight size={14} aria-hidden />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => navigate('/restaurants')}
-                        >
-                          Find restaurants in my city <ArrowUpRight size={14} aria-hidden />
-                        </button>
-                        <button type="button" onClick={() => void handleSubmit(undefined, 'Adapt a dish to my diet')}>
-                          Adapt a dish to my diet <ArrowUpRight size={14} aria-hidden />
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      {messages.map((message) => (
-                        <div key={message.id} className={`message ${message.role}`}>
-                          <span className="message-author">
-                            {message.role === 'user' ? 'YOU' : 'CHOWSMART'}
-                          </span>
-                          {message.text}
-                          {message.planItems?.length ? (
-                            <div className="menu-plan-card">
-                              <h4>{message.planTitle}</h4>
-                              <ul>
-                                {message.planItems.map((item) => (
-                                  <li key={`${item.itemType}-${item.itemId}`}>
-                                    {item.name}
-                                    {item.notes ? ` · ${item.notes}` : ''}
-                                  </li>
-                                ))}
-                              </ul>
-                              <div className="plan-actions">
-                                <button type="button" onClick={() => void savePlan(message)}>
-                                  Save menu
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    void handleSubmit(undefined, `Adjust this plan for ${people + 2} people`)
-                                  }
-                                >
-                                  Adjust for more guests
-                                </button>
-                              </div>
-                            </div>
-                          ) : null}
+            <AnimatePresence mode="wait">
+              {tab === 'create' ? (
+                <motion.div
+                  key="create"
+                  variants={tabPanel}
+                  initial={reduce ? false : 'hidden'}
+                  animate="visible"
+                  exit="exit"
+                >
+                  <div className="conversation" ref={conversationRef}>
+                    {messages.length === 0 ? (
+                      <motion.div
+                        className="empty-conversation"
+                        initial={reduce ? false : { opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, ease: easeOut }}
+                      >
+                        <div className="studio-symbol">
+                          <Sparkles size={26} aria-hidden />
                         </div>
-                      ))}
-                      {thinking ? <p className="thinking">Building a menu from your ChowSmart recipes…</p> : null}
-                    </div>
-                  )}
-                </div>
+                        <h2>What are we cooking today?</h2>
+                        <p>
+                          Explore {destination.label}, plan a family meal,
+                          <br />
+                          or build a menu around what you already have.
+                        </p>
+                        <div className="prompt-chips">
+                          <button
+                            type="button"
+                            onClick={() => void handleSubmit(undefined, 'Plan a local dinner menu')}
+                          >
+                            Plan a local dinner menu <ArrowUpRight size={14} aria-hidden />
+                          </button>
+                          <button type="button" onClick={() => navigate('/restaurants')}>
+                            Find restaurants in my city <ArrowUpRight size={14} aria-hidden />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void handleSubmit(undefined, 'Adapt a dish to my diet')}
+                          >
+                            Adapt a dish to my diet <ArrowUpRight size={14} aria-hidden />
+                          </button>
+                        </div>
+                      </motion.div>
+                    ) : (
+                      <div>
+                        <AnimatePresence initial={false}>
+                          {messages.map((message) => (
+                            <motion.div
+                              key={message.id}
+                              className={`message ${message.role}`}
+                              variants={chatBubble}
+                              initial={reduce ? false : 'hidden'}
+                              animate="visible"
+                              layout
+                            >
+                              <span className="message-author">
+                                {message.role === 'user' ? 'YOU' : 'CHOWSMART'}
+                              </span>
+                              {message.text}
+                              {message.planItems?.length ? (
+                                <div className="menu-plan-card">
+                                  <h4>{message.planTitle}</h4>
+                                  <ul>
+                                    {message.planItems.map((item) => (
+                                      <li key={`${item.itemType}-${item.itemId}`}>
+                                        {item.name}
+                                        {item.notes ? ` · ${item.notes}` : ''}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                  <div className="plan-actions">
+                                    <button type="button" onClick={() => void savePlan(message)}>
+                                      Save menu
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        void handleSubmit(
+                                          undefined,
+                                          `Adjust this plan for ${people + 2} people`
+                                        )
+                                      }
+                                    >
+                                      Adjust for more guests
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : null}
+                            </motion.div>
+                          ))}
+                        </AnimatePresence>
+                        {thinking ? (
+                          <motion.p
+                            className="thinking"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            Building a menu from your ChowSmart recipes…
+                          </motion.p>
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
 
-                <form className="world-composer" onSubmit={(e) => void handleSubmit(e)}>
-                  <textarea
-                    aria-label="Ask ChowSmart"
-                    maxLength={6000}
-                    rows={3}
-                    placeholder="I have rice, tomatoes and beans. What can I make?"
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                  />
-                  <div className="composer-actions">
-                    <button
-                      type="button"
-                      className={listening ? 'recording' : ''}
-                      onClick={() => (listening ? stopDictation() : startDictation())}
-                    >
-                      <Mic size={17} aria-hidden /> {listening ? 'Listening…' : 'Dictate'}
-                    </button>
-                    <span>
-                      {people} people · {destination.label}
-                    </span>
-                    <button
-                      className="send-button"
-                      type="submit"
-                      aria-label="Generate menu"
-                      disabled={!prompt.trim() || thinking}
-                    >
-                      <ArrowUp size={21} aria-hidden />
-                    </button>
+                  <form className="world-composer" onSubmit={(e) => void handleSubmit(e)}>
+                    <textarea
+                      aria-label="Ask ChowSmart"
+                      maxLength={6000}
+                      rows={3}
+                      placeholder="I have rice, tomatoes and beans. What can I make?"
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                    />
+                    <div className="composer-actions">
+                      <button
+                        type="button"
+                        className={listening ? 'recording' : ''}
+                        onClick={() => (listening ? stopDictation() : startDictation())}
+                      >
+                        <Mic size={17} aria-hidden /> {listening ? 'Listening…' : 'Dictate'}
+                      </button>
+                      <span>
+                        {people} people · {destination.label}
+                      </span>
+                      <button
+                        className="send-button"
+                        type="submit"
+                        aria-label="Generate menu"
+                        disabled={!prompt.trim() || thinking}
+                      >
+                        <ArrowUp size={21} aria-hidden />
+                      </button>
+                    </div>
+                  </form>
+                  <p className="composer-note">
+                    Review dictated text before sending. Browser dictation may use a speech service.
+                  </p>
+                  <div className="connection-note">
+                    <span className={aiStatus === 'ready' ? 'connected' : ''} />
+                    {aiStatus === 'checking'
+                      ? 'Checking AI connection…'
+                      : aiStatus === 'ready'
+                        ? 'Menu suggestions use your ChowSmart recipe library.'
+                        : 'AI provider offline — local recipe matching is active.'}
                   </div>
-                </form>
-                <p className="composer-note">
-                  Review dictated text before sending. Browser dictation may use a speech service.
-                </p>
-                <div className="connection-note">
-                  <span className={aiStatus === 'ready' ? 'connected' : ''} />
-                  {aiStatus === 'checking'
-                    ? 'Checking AI connection…'
-                    : aiStatus === 'ready'
-                      ? 'Menu suggestions use your ChowSmart recipe library.'
-                      : 'AI provider offline — local recipe matching is active.'}
-                </div>
-                {error ? <div className="world-error">{error}</div> : null}
-                {saveNote ? <p className="world-notice">{saveNote}</p> : null}
-              </>
-            ) : (
-              <div className="saved-list">
-                {savedError ? <div className="world-error">{savedError}</div> : null}
-                {!savedError && saved.length === 0 ? (
-                  <div className="empty-conversation">
-                    <h2>No saved menus yet</h2>
-                    <p>Create a menu in the studio, then save it to your account.</p>
-                  </div>
-                ) : null}
-                {saved.map((plan) => (
-                  <details key={plan.id}>
-                    <summary>
-                      {plan.name}
-                      <span>{new Date(plan.updatedAt).toLocaleDateString()}</span>
-                    </summary>
-                    <p>{plan.description || 'Saved from Menu Studio.'}</p>
-                    <ul>
-                      {(plan.items || []).map((item) => (
-                        <li key={item.id || `${item.itemType}-${item.itemId}`}>
-                          {item.quantity}× {item.name}
-                        </li>
-                      ))}
-                    </ul>
-                    <button
-                      type="button"
-                      className="saved-delete"
-                      disabled={deletingId === plan.id}
-                      onClick={() => void deleteSavedPlan(plan.id, plan.name)}
-                    >
-                      <Trash2 size={14} aria-hidden />
-                      {deletingId === plan.id ? 'Deleting…' : 'Delete menu'}
-                    </button>
-                  </details>
-                ))}
-              </div>
-            )}
+                  {error ? <div className="world-error">{error}</div> : null}
+                  {saveNote ? <p className="world-notice">{saveNote}</p> : null}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="saved"
+                  className="saved-list"
+                  variants={tabPanel}
+                  initial={reduce ? false : 'hidden'}
+                  animate="visible"
+                  exit="exit"
+                >
+                  {savedError ? <div className="world-error">{savedError}</div> : null}
+                  {!savedError && saved.length === 0 ? (
+                    <div className="empty-conversation">
+                      <h2>No saved menus yet</h2>
+                      <p>Create a menu in the studio, then save it to your account.</p>
+                    </div>
+                  ) : null}
+                  {saved.map((plan) => (
+                    <details key={plan.id}>
+                      <summary>
+                        {plan.name}
+                        <span>{new Date(plan.updatedAt).toLocaleDateString()}</span>
+                      </summary>
+                      <p>{plan.description || 'Saved from Menu Studio.'}</p>
+                      <ul>
+                        {(plan.items || []).map((item) => (
+                          <li key={item.id || `${item.itemType}-${item.itemId}`}>
+                            {item.quantity}× {item.name}
+                          </li>
+                        ))}
+                      </ul>
+                      <button
+                        type="button"
+                        className="saved-delete"
+                        disabled={deletingId === plan.id}
+                        onClick={() => void deleteSavedPlan(plan.id, plan.name)}
+                      >
+                        <Trash2 size={14} aria-hidden />
+                        {deletingId === plan.id ? 'Deleting…' : 'Delete menu'}
+                      </button>
+                    </details>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
         </div>
 

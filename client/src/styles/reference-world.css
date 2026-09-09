@@ -13,23 +13,63 @@
 @media (width<=800px){.preferences-toggle{display:flex}.world-settings{display:none}.world-settings.preferences-open{display:grid}}
 
 
-.talk-modal-backdrop{position:fixed;inset:0;z-index:60;background:rgba(24,32,28,.45);display:flex;align-items:center;justify-content:center;padding:20px;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.talk-modal-backdrop{position:fixed;inset:0;z-index:60;background:rgba(24,32,28,.45);display:flex;align-items:center;justify-content:center;padding:20px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .talk-modal{position:relative;width:min(100%,440px);background:#fff;border-radius:18px;padding:28px 28px 24px;box-shadow:0 24px 60px rgba(24,32,28,.18);font-family:var(--font-brand),Arial,Helvetica,sans-serif}
-.talk-modal-close{position:absolute;top:16px;right:16px;border:0;background:transparent;color:#6b756f;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.talk-modal-close{position:absolute;top:16px;right:16px;border:0;background:transparent;color:#6b756f;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background-color .2s ease,color .2s ease}
 .talk-modal-close:hover{background:#f3f5f1;color:#202823}
 .talk-modal h2{margin:0 36px 8px 0;font-size:28px;font-weight:700;letter-spacing:-.04em;color:#2a332c;line-height:1.15}
 .talk-modal-lead{margin:0 0 28px;color:#7a8478;font-size:14px;line-height:1.55}
 .talk-modal-stage{text-align:center;margin-bottom:26px}
-.talk-modal-orb{width:120px;height:120px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;color:#2d4b30;background:radial-gradient(circle at 32% 28%,#e8f3df,#9fb896 62%,#7f9a78)}
+.talk-modal-orb{width:120px;height:120px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;color:#2d4b30;background:radial-gradient(circle at 32% 28%,#e8f3df,#9fb896 62%,#7f9a78);transition:transform .3s ease}
+.talk-modal-orb.live{animation:2s infinite voice-pulse}
 .talk-modal-status{margin:0 0 6px;font-size:16px;font-weight:600;color:#4a554c}
 .talk-modal-meta{margin:0;font-size:12px;color:#8b9588}
-.talk-modal-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.talk-modal-reply{background:#f4f7f2;border:1px solid #dfe7de;border-radius:12px;padding:14px 16px;margin:0 0 18px;color:#3d5248;font-size:14px;line-height:1.6;text-align:left;white-space:pre-wrap}
+.talk-modal-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:18px}
+.talk-modal-actions input{width:100%;border:1px solid #d5ddd4;border-radius:10px;min-height:44px;padding:11px 14px;font-size:14px;color:#2a332c;background:#fff;outline:none;transition:border-color .2s ease,box-shadow .2s ease}
+.talk-modal-actions input:focus{border-color:#087f5b;box-shadow:0 0 0 3px rgba(8,127,91,.12)}
+.talk-modal-actions .talk-modal-primary,.talk-modal-actions .talk-modal-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background-color .2s ease,transform .2s ease,opacity .2s ease}
+.talk-modal-actions .talk-modal-primary:hover:not(:disabled){transform:translateY(-1px)}
 .talk-modal-primary{border:0;border-radius:10px;background:#263c30;color:#fff;min-height:44px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer}
 .talk-modal-primary:disabled{opacity:.55;cursor:not-allowed}
 .talk-modal-secondary{border:1px solid #d5ddd4;border-radius:10px;background:#fff;color:#3f4a41;min-height:44px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer}
 .talk-modal-secondary:hover{background:#f7f9f6}
 .talk-modal-alert{background:#fdece7;color:#9f432d;border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.55;margin-bottom:16px}
 .talk-modal-disclaimer{margin:0;text-align:center;color:#909886;font-size:11px;line-height:1.65}
-@media (width<=520px){.talk-modal{padding:24px 18px 20px}.talk-modal h2{font-size:24px}.talk-modal-actions{flex-direction:column}.talk-modal-primary,.talk-modal-secondary{width:100%}}
+@media (prefers-reduced-motion:reduce){.talk-modal-orb.live{animation:none}}
+@media (width<=520px){.talk-modal{padding:24px 18px 20px}.talk-modal h2{font-size:24px}}
 
 .saved-list ul{margin:8px 0 0;padding-left:18px;line-height:1.7;color:#5f6b5a}.saved-delete{color:#9f432d;background:#fff;border:1px solid #ecd8d1;border-radius:8px;align-items:center;gap:7px;margin-top:14px;padding:8px 12px;font-size:11px;font-weight:600;display:inline-flex}.saved-delete:hover{background:#fff5f1}
+
+/* Interaction polish: keep the existing palette, add depth through motion and state. */
+.world-studio{animation:world-settle .65s cubic-bezier(.22,1,.36,1) both}
+.world-settings,.preferences-toggle,.world-studio,.world-explore{transition:box-shadow .3s ease,transform .3s ease,border-color .3s ease}
+.world-settings:hover,.world-studio:hover{box-shadow:0 18px 42px rgba(32,40,35,.07)}
+.preferences-toggle:hover{border-color:#b8d2bf;box-shadow:0 10px 24px rgba(8,127,91,.08);transform:translateY(-1px)}
+.studio-nav button,.prompt-chips button,.plan-actions button,.saved-delete{transition:transform .22s ease,background-color .22s ease,border-color .22s ease,box-shadow .22s ease}
+.studio-nav button:hover:not(:disabled),.prompt-chips button:hover:not(:disabled),.plan-actions button:hover:not(:disabled),.saved-delete:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(32,40,35,.08)}
+.studio-nav button.selected{position:relative}
+.studio-nav button.selected::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:2px;border-radius:2px;background:#087f5b;animation:world-line-in .35s ease both}
+.prompt-chips button:nth-child(2){animation-delay:.06s}.prompt-chips button:nth-child(3){animation-delay:.12s}
+.prompt-chips button{animation:world-chip-in .45s cubic-bezier(.22,1,.36,1) both}
+.message.assistant{box-shadow:0 8px 22px rgba(32,40,35,.035)}
+.message.user{animation-delay:.02s}
+.menu-plan-card{transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.menu-plan-card:hover{transform:translateY(-2px);border-color:#cbdacb;box-shadow:0 12px 24px rgba(32,40,35,.06)}
+.world-composer{transition:border-color .25s ease,box-shadow .25s ease,transform .25s ease}
+.world-composer:focus-within{border-color:#9dbda5;box-shadow:0 12px 28px rgba(8,127,91,.1);transform:translateY(-1px)}
+.send-button:not(:disabled){animation:world-send-ready 2.4s ease-in-out infinite}
+.send-button:not(:disabled):hover{animation:none;transform:translateY(-2px) scale(1.04)}
+.thinking{display:flex;align-items:center;gap:8px}
+.thinking::after{content:"";width:7px;height:7px;border-radius:50%;background:#087f5b;animation:world-breathe 1s ease-in-out infinite}
+.connection-note span.connected{animation:world-breathe 2s ease-in-out infinite}
+.talk-modal-orb{box-shadow:0 14px 32px rgba(8,127,91,.12)}
+.talk-modal-close:hover{transform:rotate(8deg)}
+.talk-modal-actions input:focus{transform:translateY(-1px)}
+
+@keyframes world-settle{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes world-chip-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes world-line-in{from{transform:scaleX(0);transform-origin:center}to{transform:scaleX(1);transform-origin:center}}
+@keyframes world-send-ready{0%,100%{box-shadow:0 0 0 rgba(8,127,91,0)}50%{box-shadow:0 0 0 5px rgba(8,127,91,.08)}}
+@keyframes world-breathe{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+@media (prefers-reduced-motion:reduce){.world-studio,.prompt-chips button,.studio-nav button.selected::after{animation:none}.world-settings,.preferences-toggle,.world-studio,.world-explore,.studio-nav button,.prompt-chips button,.plan-actions button,.saved-delete,.menu-plan-card,.world-composer{transition:none}.send-button:not(:disabled){animation:none}}

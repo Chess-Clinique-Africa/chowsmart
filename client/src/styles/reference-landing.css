@@ -95,6 +95,12 @@
   font-weight: 700;
   display: inline-flex;
   text-decoration: none;
+  transition:
+    background-color 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
 }
 
 .cs-primary {
@@ -104,6 +110,13 @@
 
 .cs-primary:hover {
   background: #0c412b;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(21, 89, 62, 0.22);
+}
+
+.cs-primary:active,
+.cs-secondary:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .cs-secondary {
@@ -114,6 +127,7 @@
 
 .cs-secondary:hover {
   background: #f7faf7;
+  transform: translateY(-1px);
 }
 
 .cs-origin {
@@ -133,6 +147,11 @@
   object-fit: cover;
   width: 100%;
   height: 100%;
+  transition: transform 0.8s ease;
+}
+
+.cs-hero-image:hover > img {
+  transform: scale(1.03);
 }
 
 .cs-image-caption {
@@ -221,16 +240,27 @@
   text-decoration: none;
   color: inherit;
   display: block;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
 }
 
 .cs-path:hover {
   border-color: #c5d5c4;
+  box-shadow: 0 16px 40px rgba(8, 127, 91, 0.1);
+  transform: translateY(-4px);
 }
 
 .cs-path > img {
   aspect-ratio: 3 / 2;
   object-fit: cover;
   width: 100%;
+  transition: transform 0.55s ease;
+}
+
+.cs-path:hover > img {
+  transform: scale(1.04);
 }
 
 .cs-path > div {
@@ -297,11 +327,22 @@
 .cs-bread-image {
   position: relative;
   text-decoration: none;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.cs-bread-image:hover {
+  transform: translateY(-3px);
 }
 
 .cs-bread-image img {
   border-radius: 10px;
   width: 100%;
+  transition: transform 0.55s ease;
+}
+
+.cs-bread-image:hover img {
+  transform: scale(1.03);
 }
 
 .cs-bread-image span {
@@ -552,6 +593,9 @@ html .app-desktop-nav a {
   font-size: 14px;
   font-weight: 600;
   display: flex;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 html .app-desktop-nav a:hover {

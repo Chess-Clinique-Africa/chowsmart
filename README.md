@@ -78,7 +78,11 @@ JWT_SECRET=...
 PORT=5000
 CLIENT_URL=http://localhost:5173
 VITE_API_URL=http://localhost:5000/api
+OPENAI_API_KEY=...
+OPENAI_MODEL=gpt-4o-mini
 ```
+
+Set `OPENAI_API_KEY` on the server to enable the ChowSmart AI agent. The key is never exposed to the client; without it, `/api/ai/chat` returns a clear configuration error.
 
 ## API overview
 

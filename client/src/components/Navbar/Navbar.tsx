@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   ArrowUpRight,
   ChefHat,
@@ -13,6 +14,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { softSpring, staggerChildren, fadeUp } from '@/utils/motion';
 
 const links: { to: string; label: string; Icon: LucideIcon }[] = [
   { to: '/restaurants', label: 'Restaurants', Icon: MapPin },
@@ -48,6 +50,7 @@ export function Navbar() {
   const { user, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const reduce = useReducedMotion();
   const onMenuStudio = pathname.startsWith('/menu-studio');
   const ctaLabel = onMenuStudio ? 'Talk to ChowSmart' : 'Plan a menu';
   const CtaIcon = onMenuStudio ? Mic : Sparkles;
@@ -58,6 +61,10 @@ export function Navbar() {
       document.body.style.overflow = '';
     };
   }, [open]);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   async function handleLogout() {
     await logout();
@@ -128,70 +135,96 @@ export function Navbar() {
         ))}
       </nav>
 
-      {open ? (
-        <div className="app-menu-sheet" role="dialog" aria-modal="true" aria-label="Navigation">
-          <button
-            type="button"
-            className="app-menu-sheet-backdrop"
-            aria-label="Close navigation menu"
-            onClick={() => setOpen(false)}
-          />
-          <div className="app-menu-sheet-panel">
+      <AnimatePresence>
+        {open ? (
+          <motion.div
+            key="nav-sheet"
+            className="app-menu-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
             <button
               type="button"
-              className="app-menu-sheet-close"
+              className="app-menu-sheet-backdrop"
               aria-label="Close navigation menu"
               onClick={() => setOpen(false)}
+            />
+            <motion.div
+              className="app-menu-sheet-panel"
+              initial={reduce ? false : { x: '100%' }}
+              animate={{ x: 0 }}
+              exit={reduce ? undefined : { x: '100%' }}
+              transition={reduce ? { duration: 0 } : softSpring}
             >
-              <X size={18} strokeWidth={2.25} aria-hidden />
-            </button>
+              <button
+                type="button"
+                className="app-menu-sheet-close"
+                aria-label="Close navigation menu"
+                onClick={() => setOpen(false)}
+              >
+                <X size={18} strokeWidth={2.25} aria-hidden />
+              </button>
 
-            <div className="app-menu-sheet-intro">
-              <h2>Explore ChowSmart</h2>
-              <p>Discover food, build a menu, or develop a recipe.</p>
-            </div>
+              <div className="app-menu-sheet-intro">
+                <h2>Explore ChowSmart</h2>
+                <p>Discover food, build a menu, or develop a recipe.</p>
+              </div>
 
-            <nav className="app-menu-sheet-nav" aria-label="Explore">
-              {links.map(({ to, label, Icon }) => (
-                <NavLink key={to} to={to} onClick={() => setOpen(false)}>
-                  <span className="app-menu-sheet-link-main">
-                    <Icon size={22} strokeWidth={1.75} aria-hidden />
-                    <span>{label}</span>
-                  </span>
-                  <ArrowUpRight size={18} strokeWidth={1.85} aria-hidden />
-                </NavLink>
-              ))}
-            </nav>
-
-            <div className="app-menu-sheet-account">
-              {user ? (
-                <>
-                  <NavLink to="/profile" onClick={() => setOpen(false)}>
-                    Profile
-                  </NavLink>
-                  <NavLink to="/favorites" onClick={() => setOpen(false)}>
-                    Favorites
-                  </NavLink>
-                  {isAdmin ? (
-                    <NavLink to="/admin" onClick={() => setOpen(false)}>
-                      Admin
+              <motion.nav
+                className="app-menu-sheet-nav"
+                aria-label="Explore"
+                variants={staggerChildren(0.05, 0.08)}
+                initial={reduce ? false : 'hidden'}
+                animate="visible"
+              >
+                {links.map(({ to, label, Icon }) => (
+                  <motion.div key={to} variants={fadeUp}>
+                    <NavLink to={to} onClick={() => setOpen(false)}>
+                      <span className="app-menu-sheet-link-main">
+                        <Icon size={22} strokeWidth={1.75} aria-hidden />
+                        <span>{label}</span>
+                      </span>
+                      <ArrowUpRight size={18} strokeWidth={1.85} aria-hidden />
                     </NavLink>
-                  ) : null}
-                  <button type="button" onClick={() => void handleLogout()}>
-                    Log out
-                  </button>
-                </>
-              ) : (
-                <NavLink to="/login" onClick={() => setOpen(false)}>
-                  Log in
-                </NavLink>
-              )}
-            </div>
+                  </motion.div>
+                ))}
+              </motion.nav>
 
-            <p className="app-menu-sheet-footer">Products and Consumers Technologies Limited</p>
-          </div>
-        </div>
-      ) : null}
+              <div className="app-menu-sheet-account">
+                {user ? (
+                  <>
+                    <NavLink to="/profile" onClick={() => setOpen(false)}>
+                      Profile
+                    </NavLink>
+                    <NavLink to="/favorites" onClick={() => setOpen(false)}>
+                      Favorites
+                    </NavLink>
+                    {isAdmin ? (
+                      <NavLink to="/admin" onClick={() => setOpen(false)}>
+                        Admin
+                      </NavLink>
+                    ) : null}
+                    <button type="button" onClick={() => void handleLogout()}>
+                      Log out
+                    </button>
+                  </>
+                ) : (
+                  <NavLink to="/login" onClick={() => setOpen(false)}>
+                    Log in
+                  </NavLink>
+                )}
+              </div>
+
+              <p className="app-menu-sheet-footer">Products and Consumers Technologies Limited</p>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </>
   );
 }

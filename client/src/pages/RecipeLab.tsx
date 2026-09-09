@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -14,6 +15,8 @@ import {
 } from 'lucide-react';
 import { breadsService } from '@/services/breads';
 import { recipesService } from '@/services/recipes';
+import { api, unwrap } from '@/services/api';
+import { easeOut, softSpring, tabPanel } from '@/utils/motion';
 import type { Bread, Recipe } from '@/types';
 
 const DRAFT_KEY = 'chowsmart-kitchen-draft';
@@ -291,6 +294,7 @@ function agentReply(
 
 export function RecipeLab() {
   const navigate = useNavigate();
+  const reduce = useReducedMotion();
   const [tab, setTab] = useState<TabId>('catalogue');
   const [breads, setBreads] = useState<Bread[]>([]);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -306,6 +310,7 @@ export function RecipeLab() {
   const [selected, setSelected] = useState<CollectionCard | null>(null);
   const [agentPrompt, setAgentPrompt] = useState('');
   const [agentAnswer, setAgentAnswer] = useState('');
+  const [agentThinking, setAgentThinking] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
 
   useEffect(() => {
@@ -438,16 +443,34 @@ export function RecipeLab() {
     }
   }
 
-  function askAgent(text: string) {
+  async function askAgent(text: string) {
     const prompt = text.trim();
-    if (!prompt) return;
+    if (!prompt || agentThinking) return;
     setAgentPrompt(prompt);
-    setAgentAnswer(agentReply(prompt, collection, breads, recipes));
+    setAgentThinking(true);
+    try {
+      const catalogue = collection
+        .slice(0, 40)
+        .map((card) => `${card.name} (${card.categoryLabel}, ${card.calories ?? 'unknown'} kcal)`)
+        .join(', ');
+      const response = await unwrap<{ message: string }>(
+        api.post('/ai/chat', {
+          message: `${prompt}\nAvailable ChowSmart catalogue: ${catalogue}`,
+          context: { diet: diet || 'any', destination: region || 'any' },
+        })
+      );
+      setAgentAnswer(response.message);
+    } catch (err) {
+      setAgentAnswer(agentReply(prompt, collection, breads, recipes));
+      setError(err instanceof Error ? `${err.message}. Showing catalogue guidance.` : 'AI provider unavailable. Showing catalogue guidance.');
+    } finally {
+      setAgentThinking(false);
+    }
   }
 
   function onAgentSubmit(e: FormEvent) {
     e.preventDefault();
-    askAgent(agentPrompt);
+    void askAgent(agentPrompt);
   }
 
   function continueToStudio() {
@@ -464,7 +487,12 @@ export function RecipeLab() {
   return (
     <div className="k-app">
       <div className="k-main" id="k-work">
-        <div className="k-heading">
+        <motion.div
+          className="k-heading"
+          initial={reduce ? false : { opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: easeOut }}
+        >
           <div>
             <p className="k-kicker">NIGERIAN ROOTS. AFRICAN POSSIBILITIES.</p>
             <h1>
@@ -476,7 +504,7 @@ export function RecipeLab() {
             <ClipboardList size={18} aria-hidden />
             Menu draft <span>{draft.length}</span>
           </button>
-        </div>
+        </motion.div>
 
         <div className="k-tabs">
           <div className="k-tablist" role="tablist" aria-label="Kitchen workspace">
@@ -495,58 +523,68 @@ export function RecipeLab() {
 
           <div className="k-layout">
             <div className="k-workspace">
-              {draftOpen ? (
-                <div className="k-draft-panel">
-                  <h3>Menu draft</h3>
-                  {draft.length === 0 ? (
-                    <p className="k-small" style={{ marginTop: 0 }}>
-                      Add recipes from the collection with the + button.
-                    </p>
-                  ) : (
-                    <ul>
-                      {draft.map((item) => (
-                        <li key={item.key}>
-                          <span>
-                            {item.name}
-                            {item.calories != null ? ` · ~${item.calories} kcal` : ''}
-                          </span>
-                          <span style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <input
-                              className="k-count"
-                              type="number"
-                              min={1}
-                              value={item.quantity}
-                              onChange={(e) => updateQty(item.key, Number(e.target.value) || 1)}
-                              aria-label={`Quantity for ${item.name}`}
-                            />
-                            <button
-                              type="button"
-                              className="k-icon-button"
-                              aria-label={`Remove ${item.name}`}
-                              onClick={() => removeDraft(item.key)}
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  <div className="k-draft-actions">
-                    <button
-                      type="button"
-                      className="k-button k-dark"
-                      disabled={!draft.length}
-                      onClick={continueToStudio}
-                    >
-                      Continue in Menu studio
-                    </button>
-                    <button type="button" className="k-text-button" onClick={() => setDraft([])}>
-                      Clear draft
-                    </button>
-                  </div>
-                </div>
-              ) : null}
+              <AnimatePresence initial={false}>
+                {draftOpen ? (
+                  <motion.div
+                    key="draft"
+                    className="k-draft-panel"
+                    initial={reduce ? false : { opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={reduce ? undefined : { opacity: 0, height: 0 }}
+                    transition={reduce ? { duration: 0 } : softSpring}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <h3>Menu draft</h3>
+                    {draft.length === 0 ? (
+                      <p className="k-small" style={{ marginTop: 0 }}>
+                        Add recipes from the collection with the + button.
+                      </p>
+                    ) : (
+                      <ul>
+                        {draft.map((item) => (
+                          <li key={item.key}>
+                            <span>
+                              {item.name}
+                              {item.calories != null ? ` · ~${item.calories} kcal` : ''}
+                            </span>
+                            <span style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                              <input
+                                className="k-count"
+                                type="number"
+                                min={1}
+                                value={item.quantity}
+                                onChange={(e) => updateQty(item.key, Number(e.target.value) || 1)}
+                                aria-label={`Quantity for ${item.name}`}
+                              />
+                              <button
+                                type="button"
+                                className="k-icon-button"
+                                aria-label={`Remove ${item.name}`}
+                                onClick={() => removeDraft(item.key)}
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <div className="k-draft-actions">
+                      <button
+                        type="button"
+                        className="k-button k-dark"
+                        disabled={!draft.length}
+                        onClick={continueToStudio}
+                      >
+                        Continue in Menu studio
+                      </button>
+                      <button type="button" className="k-text-button" onClick={() => setDraft([])}>
+                        Clear draft
+                      </button>
+                    </div>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
 
               <div className="k-filter-box">
                 <div className="k-filter-top">
@@ -586,219 +624,265 @@ export function RecipeLab() {
                 </p>
               </div>
 
-              {tab === 'catalogue' ? (
-                <>
-                  <div className="k-collection-top">
-                    <div>
-                      <p className="k-kicker">THE CHOWSMART COLLECTION</p>
-                      <h2>Made for your next menu.</h2>
+              <AnimatePresence mode="wait">
+                {tab === 'catalogue' ? (
+                  <motion.div
+                    key="catalogue"
+                    variants={tabPanel}
+                    initial={reduce ? false : 'hidden'}
+                    animate="visible"
+                    exit="exit"
+                  >
+                    <div className="k-collection-top">
+                      <div>
+                        <p className="k-kicker">THE CHOWSMART COLLECTION</p>
+                        <h2>Made for your next menu.</h2>
+                      </div>
+                      <span>
+                        {loading ? '…' : collection.length} recipe
+                        {collection.length === 1 ? '' : 's'}
+                      </span>
                     </div>
-                    <span>
-                      {loading ? '…' : collection.length} recipe
-                      {collection.length === 1 ? '' : 's'}
-                    </span>
-                  </div>
 
-                  <div className="k-searchline">
-                    <label className="k-search">
-                      <Search size={18} aria-hidden />
-                      <input
-                        aria-label="Search recipes"
-                        placeholder="Search bread, jollof, yam…"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                      />
-                    </label>
-                    <label className="k-pick">
-                      <span>Category</span>
-                      <select
-                        aria-label="Category"
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                      >
-                        {CATEGORIES.map((c) => (
-                          <option key={c.value || 'all'} value={c.value}>
-                            {c.label}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label className="k-pick">
-                      <span>Region</span>
-                      <select
-                        aria-label="Region"
-                        value={region}
-                        onChange={(e) => setRegion(e.target.value)}
-                      >
-                        <option value="">All regions</option>
-                        {regions.map((r) => (
-                          <option key={r} value={r}>
-                            {r.charAt(0).toUpperCase() + r.slice(1)}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-
-                  {error ? <p className="k-warning">{error}</p> : null}
-
-                  {loading ? (
-                    <div className="k-empty">
-                      <h3>Loading collection…</h3>
-                      <p>Pulling breads and recipes from the database.</p>
+                    <div className="k-searchline">
+                      <label className="k-search">
+                        <Search size={18} aria-hidden />
+                        <input
+                          aria-label="Search recipes"
+                          placeholder="Search bread, jollof, yam…"
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                        />
+                      </label>
+                      <label className="k-pick">
+                        <span>Category</span>
+                        <select
+                          aria-label="Category"
+                          value={category}
+                          onChange={(e) => setCategory(e.target.value)}
+                        >
+                          {CATEGORIES.map((c) => (
+                            <option key={c.value || 'all'} value={c.value}>
+                              {c.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="k-pick">
+                        <span>Region</span>
+                        <select
+                          aria-label="Region"
+                          value={region}
+                          onChange={(e) => setRegion(e.target.value)}
+                        >
+                          <option value="">All regions</option>
+                          {regions.map((r) => (
+                            <option key={r} value={r}>
+                              {r.charAt(0).toUpperCase() + r.slice(1)}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
                     </div>
-                  ) : collection.length === 0 ? (
-                    <div className="k-empty">
-                      <h3>No matches</h3>
-                      <p>Try clearing filters or search terms.</p>
-                    </div>
-                  ) : (
-                    <div className="k-cards">
-                      {collection.map((card) => (
-                        <article key={card.key} className="k-card">
-                          <div className="k-food-img k-studio-image">
-                            <img
-                              src={card.image}
-                              alt={`${card.name} — AI-generated recipe illustration`}
-                              loading="lazy"
-                              decoding="async"
-                            />
-                            <span>{card.badge}</span>
-                          </div>
-                          <div className="k-card-body">
-                            <span className="k-card-category">{card.categoryLabel}</span>
-                            <h3>{card.name}</h3>
-                            <p>{card.description}</p>
-                            <div className="k-card-nutrition">
-                              <b>
-                                ~{card.calories ?? '—'} <small>kcal</small>
-                              </b>
-                              <span>{card.portionLabel}</span>
+
+                    {error ? <p className="k-warning">{error}</p> : null}
+
+                    {loading ? (
+                      <div className="k-empty">
+                        <h3>Loading collection…</h3>
+                        <p>Pulling breads and recipes from the database.</p>
+                      </div>
+                    ) : collection.length === 0 ? (
+                      <div className="k-empty">
+                        <h3>No matches</h3>
+                        <p>Try clearing filters or search terms.</p>
+                      </div>
+                    ) : (
+                      <div className="k-cards">
+                        {collection.map((card, index) => (
+                          <motion.article
+                            key={card.key}
+                            className="k-card"
+                            initial={reduce ? false : { opacity: 0, y: 12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{
+                              duration: 0.35,
+                              delay: Math.min(index * 0.04, 0.28),
+                              ease: easeOut,
+                            }}
+                          >
+                            <div className="k-food-img k-studio-image">
+                              <img
+                                src={card.image}
+                                alt={`${card.name} — AI-generated recipe illustration`}
+                                loading="lazy"
+                                decoding="async"
+                              />
+                              <span>{card.badge}</span>
                             </div>
-                            <div className="k-card-actions">
-                              <button type="button" onClick={() => void explore(card)}>
-                                Explore recipe <ArrowRight size={16} aria-hidden />
-                              </button>
-                              <button
-                                type="button"
-                                aria-label={`Add ${card.name} to menu`}
-                                onClick={() => addToDraft(card)}
-                              >
-                                <Plus size={20} aria-hidden />
-                              </button>
+                            <div className="k-card-body">
+                              <span className="k-card-category">{card.categoryLabel}</span>
+                              <h3>{card.name}</h3>
+                              <p>{card.description}</p>
+                              <div className="k-card-nutrition">
+                                <b>
+                                  ~{card.calories ?? '—'} <small>kcal</small>
+                                </b>
+                                <span>{card.portionLabel}</span>
+                              </div>
+                              <div className="k-card-actions">
+                                <button type="button" onClick={() => void explore(card)}>
+                                  Explore recipe <ArrowRight size={16} aria-hidden />
+                                </button>
+                                <button
+                                  type="button"
+                                  aria-label={`Add ${card.name} to menu`}
+                                  onClick={() => addToDraft(card)}
+                                >
+                                  <Plus size={20} aria-hidden />
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        </article>
-                      ))}
-                    </div>
-                  )}
+                          </motion.article>
+                        ))}
+                      </div>
+                    )}
 
-                  <p className="k-small">
-                    Food images are AI-generated illustrations, not restaurant photographs or
-                    measured portions. All recipes are development formulas. The five bread
-                    concepts come from your supplied sheets; regional dishes are clearly labeled
-                    adaptations.
-                  </p>
-                </>
-              ) : null}
+                    <p className="k-small">
+                      Food images are AI-generated illustrations, not restaurant photographs or
+                      measured portions. All recipes are development formulas. The five bread
+                      concepts come from your supplied sheets; regional dishes are clearly labeled
+                      adaptations.
+                    </p>
+                  </motion.div>
+                ) : null}
 
-              {tab === 'lab' ? (
-                <LabPanel
-                  selected={selected}
-                  loading={detailLoading}
-                  onBack={() => setTab('catalogue')}
-                  onAdd={() => selected && addToDraft(selected)}
-                />
-              ) : null}
+                {tab === 'lab' ? (
+                  <motion.div
+                    key="lab"
+                    variants={tabPanel}
+                    initial={reduce ? false : 'hidden'}
+                    animate="visible"
+                    exit="exit"
+                  >
+                    <LabPanel
+                      selected={selected}
+                      loading={detailLoading}
+                      onBack={() => setTab('catalogue')}
+                      onAdd={() => selected && addToDraft(selected)}
+                    />
+                  </motion.div>
+                ) : null}
 
-              {tab === 'planner' ? (
-                <div>
-                  <div className="k-collection-top">
-                    <div>
-                      <p className="k-kicker">KITCHEN PLANNER</p>
-                      <h2>Build the next service.</h2>
+                {tab === 'planner' ? (
+                  <motion.div
+                    key="planner"
+                    variants={tabPanel}
+                    initial={reduce ? false : 'hidden'}
+                    animate="visible"
+                    exit="exit"
+                  >
+                    <div className="k-collection-top">
+                      <div>
+                        <p className="k-kicker">KITCHEN PLANNER</p>
+                        <h2>Build the next service.</h2>
+                      </div>
                     </div>
-                  </div>
-                  {draft.length === 0 ? (
-                    <div className="k-empty">
-                      <h3>Draft is empty</h3>
-                      <p>Add items from the menu collection, then scale quantities here.</p>
-                      <button
-                        type="button"
-                        className="k-button k-dark"
-                        onClick={() => setTab('catalogue')}
-                      >
-                        Browse collection
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="k-saved">
-                        {draft.map((item) => (
-                          <button key={item.key} type="button" onClick={() => setTab('lab')}>
-                            <span>
-                              <b>{item.name}</b>
-                              <small>
-                                Qty {item.quantity}
-                                {item.calories != null
-                                  ? ` · ~${item.calories * item.quantity} kcal total`
-                                  : ''}
-                              </small>
-                            </span>
-                            <input
-                              className="k-count"
-                              type="number"
-                              min={1}
-                              value={item.quantity}
-                              onClick={(e) => e.stopPropagation()}
-                              onChange={(e) => updateQty(item.key, Number(e.target.value) || 1)}
-                            />
+                    {draft.length === 0 ? (
+                      <div className="k-empty">
+                        <h3>Draft is empty</h3>
+                        <p>Add items from the menu collection, then scale quantities here.</p>
+                        <button
+                          type="button"
+                          className="k-button k-dark"
+                          onClick={() => setTab('catalogue')}
+                        >
+                          Browse collection
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="k-saved">
+                          {draft.map((item) => (
+                            <button key={item.key} type="button" onClick={() => setTab('lab')}>
+                              <span>
+                                <b>{item.name}</b>
+                                <small>
+                                  Qty {item.quantity}
+                                  {item.calories != null
+                                    ? ` · ~${item.calories * item.quantity} kcal total`
+                                    : ''}
+                                </small>
+                              </span>
+                              <input
+                                className="k-count"
+                                type="number"
+                                min={1}
+                                value={item.quantity}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={(e) => updateQty(item.key, Number(e.target.value) || 1)}
+                              />
+                            </button>
+                          ))}
+                        </div>
+                        <div className="k-planner-actions">
+                          <button
+                            type="button"
+                            className="k-button k-dark"
+                            onClick={continueToStudio}
+                          >
+                            Open in Menu studio
                           </button>
-                        ))}
-                      </div>
-                      <div className="k-planner-actions">
-                        <button type="button" className="k-button k-dark" onClick={continueToStudio}>
-                          Open in Menu studio
-                        </button>
-                        <button type="button" className="k-text-button" onClick={() => setDraft([])}>
-                          Clear planner
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ) : null}
+                          <button
+                            type="button"
+                            className="k-text-button"
+                            onClick={() => setDraft([])}
+                          >
+                            Clear planner
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </motion.div>
+                ) : null}
 
-              {tab === 'sources' ? (
-                <div>
-                  <div className="k-analysis-intro">
-                    <div className="k-source-photo">
-                      <img src="/breads/wheat-studio.png" alt="ChowSmart wheat baguette" />
+                {tab === 'sources' ? (
+                  <motion.div
+                    key="sources"
+                    variants={tabPanel}
+                    initial={reduce ? false : 'hidden'}
+                    animate="visible"
+                    exit="exit"
+                  >
+                    <div className="k-analysis-intro">
+                      <div className="k-source-photo">
+                        <img src="/breads/wheat-studio.png" alt="ChowSmart wheat baguette" />
+                      </div>
+                      <div>
+                        <h3>Product analysis</h3>
+                        <p>
+                          Bread concepts and regional recipes in this lab are development formulas
+                          linked to your database. Nutrition figures come from modelled portions —
+                          never guessed from a photo.
+                        </p>
+                        <p>
+                          Use the collection filters to screen allergens and diet tags, then open a
+                          recipe in the lab for ingredients and method.
+                        </p>
+                        <Link className="k-text-button" to="/breads">
+                          Open bread collection →
+                        </Link>
+                      </div>
                     </div>
-                    <div>
-                      <h3>Product analysis</h3>
-                      <p>
-                        Bread concepts and regional recipes in this lab are development formulas
-                        linked to your database. Nutrition figures come from modelled portions —
-                        never guessed from a photo.
-                      </p>
-                      <p>
-                        Use the collection filters to screen allergens and diet tags, then open a
-                        recipe in the lab for ingredients and method.
-                      </p>
-                      <Link className="k-text-button" to="/breads">
-                        Open bread collection →
-                      </Link>
-                    </div>
-                  </div>
-                  <h3 className="k-subheading">In this database</h3>
-                  <p>
-                    {breads.length} bread concept{breads.length === 1 ? '' : 's'} and{' '}
-                    {recipes.length} recipe{recipes.length === 1 ? '' : 's'} are available to the
-                    kitchen workspace.
-                  </p>
-                </div>
-              ) : null}
+                    <h3 className="k-subheading">In this database</h3>
+                    <p>
+                      {breads.length} bread concept{breads.length === 1 ? '' : 's'} and{' '}
+                      {recipes.length} recipe{recipes.length === 1 ? '' : 's'} are available to the
+                      kitchen workspace.
+                    </p>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
             </div>
 
             <aside className="k-agent">
@@ -823,13 +907,36 @@ export function RecipeLab() {
               <p>Ask about the catalogue, compare a bread recipe or calculate ingredients for service.</p>
               <div className="k-prompts">
                 {PROMPTS.map((p) => (
-                  <button key={p} type="button" onClick={() => askAgent(p)}>
+                  <button key={p} type="button" onClick={() => void askAgent(p)} disabled={agentThinking}>
                     {p}
                     <ArrowUpRight size={15} aria-hidden />
                   </button>
                 ))}
               </div>
-              {agentAnswer ? <div className="k-agent-reply">{agentAnswer}</div> : null}
+              <AnimatePresence mode="wait">
+                {agentThinking ? (
+                  <motion.div
+                    key="thinking"
+                    className="k-agent-reply"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    ChowSmart is thinking…
+                  </motion.div>
+                ) : null}
+                {agentAnswer && !agentThinking ? (
+                  <motion.div
+                    key={agentAnswer.slice(0, 40)}
+                    className="k-agent-reply"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    {agentAnswer}
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
               <form onSubmit={onAgentSubmit}>
                 <label htmlFor="k-prompt">What are you preparing?</label>
                 <textarea
@@ -840,13 +947,12 @@ export function RecipeLab() {
                   value={agentPrompt}
                   onChange={(e) => setAgentPrompt(e.target.value)}
                 />
-                <button className="k-button k-dark" type="submit" disabled={!agentPrompt.trim()}>
+                <button className="k-button k-dark" type="submit" disabled={!agentPrompt.trim() || agentThinking}>
                   <Send size={17} aria-hidden /> Ask the agent
                 </button>
               </form>
               <p className="k-small">
-                Replies use the live catalogue from your database. Live LLM chat can be wired later;
-                the recipe lab and planner work independently.
+                Replies use the live catalogue from your database and the configured AI provider.
               </p>
               <div className="k-agent-tools">
                 <h3>Tools behind the menu</h3>

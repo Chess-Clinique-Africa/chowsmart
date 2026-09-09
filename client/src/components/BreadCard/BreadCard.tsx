@@ -16,7 +16,7 @@ export function BreadCard({ bread }: { bread: Bread }) {
   return (
     <Link
       to={`/breads/${bread.slug}`}
-      className="relative flex min-h-[300px] min-w-[230px] max-w-[260px] snap-start flex-col justify-end overflow-hidden rounded-[1.35rem] bg-[#eceeea] p-5 transition hover:-translate-y-1"
+      className="relative flex min-h-[300px] min-w-[230px] max-w-[260px] snap-start flex-col justify-end overflow-hidden rounded-[1.35rem] bg-[#eceeea] p-5 transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_18px_36px_rgba(8,127,91,0.18)]"
     >
       <div className="absolute inset-0">
         <Image src={image} alt={bread.name} aspect="aspect-auto h-full" className="h-full" />

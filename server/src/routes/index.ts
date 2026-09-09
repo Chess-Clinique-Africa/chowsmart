@@ -8,6 +8,7 @@ import menuPlanRoutes from './menuPlan.routes.js';
 import favoriteRoutes from './favorite.routes.js';
 import searchRoutes from './search.routes.js';
 import adminRoutes from './admin.routes.js';
+import aiRoutes from './ai.routes.js';
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use('/menu-plans', menuPlanRoutes);
 router.use('/favorites', favoriteRoutes);
 router.use('/search', searchRoutes);
 router.use('/admin', adminRoutes);
+router.use('/ai', aiRoutes);
 
 export default router;

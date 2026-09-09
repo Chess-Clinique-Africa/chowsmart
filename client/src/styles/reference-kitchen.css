@@ -28,3 +28,28 @@
 .k-food-img.k-studio-image img{object-fit:cover;width:100%;height:100%}
 .k-card-actions button{background:transparent;border:0;color:inherit;padding:0;cursor:pointer}
 .k-app{background:#f6f7f3;min-height:100%}
+
+/* Interaction polish: use the kitchen's existing greens, clay and oat neutrals. */
+.k-heading,.k-tabs,.k-layout{animation:kitchen-settle .6s cubic-bezier(.22,1,.36,1) both}
+.k-layout{animation-delay:.08s}
+.k-button,.k-tablist button,.k-agent,.k-draft-panel,.k-lab-detail,.k-card,.k-saved>button{transition:transform .24s ease,box-shadow .24s ease,border-color .24s ease,background-color .24s ease}
+.k-button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 22px rgba(41,51,41,.1)}
+.k-tablist button:hover:not([aria-selected=true]){color:#b93b20;transform:translateY(-1px)}
+.k-agent{box-shadow:0 10px 30px rgba(41,51,41,.045)}
+.k-agent:hover{box-shadow:0 16px 38px rgba(41,51,41,.08)}
+.k-agent-reply{animation:kitchen-reply-in .35s cubic-bezier(.22,1,.36,1) both}
+.k-agent form textarea{transition:border-color .24s ease,box-shadow .24s ease,transform .24s ease}
+.k-agent form textarea:focus{border-color:#9bad8e;box-shadow:0 0 0 4px rgba(45,67,47,.08);transform:translateY(-1px);outline:none}
+.k-agent-status.ready::before{content:"";display:inline-block;width:7px;height:7px;margin-right:7px;border-radius:50%;background:#2d432f;animation:kitchen-breathe 2s ease-in-out infinite}
+.k-prompts button{transition:transform .22s ease,background-color .22s ease,border-color .22s ease;animation:kitchen-chip-in .45s cubic-bezier(.22,1,.36,1) both}
+.k-prompts button:nth-child(2){animation-delay:.06s}.k-prompts button:nth-child(3){animation-delay:.12s}
+.k-prompts button:hover:not(:disabled){transform:translateX(4px);border-color:#b9c9ad;background:#edf0e5}
+.k-food-card,.k-recipe-card,.k-dish-card{transition:transform .25s ease,box-shadow .25s ease}
+.k-food-card:hover,.k-recipe-card:hover,.k-dish-card:hover{transform:translateY(-4px);box-shadow:0 14px 28px rgba(41,51,41,.1)}
+.k-saved>button:hover{transform:translateX(3px);border-color:#b9c9ad;box-shadow:0 8px 18px rgba(41,51,41,.07)}
+
+@keyframes kitchen-settle{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes kitchen-reply-in{from{opacity:0;transform:translateY(8px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes kitchen-chip-in{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes kitchen-breathe{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+@media (prefers-reduced-motion:reduce){.k-heading,.k-tabs,.k-layout,.k-agent-reply,.k-prompts button{animation:none}.k-button,.k-tablist button,.k-agent,.k-draft-panel,.k-lab-detail,.k-card,.k-saved>button,.k-agent form textarea,.k-prompts button,.k-food-card,.k-recipe-card,.k-dish-card{transition:none}.k-agent-status.ready::before{animation:none}}
