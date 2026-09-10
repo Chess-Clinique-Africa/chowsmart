@@ -182,7 +182,14 @@ export function Navbar() {
                 <h2>Explore ChowSmart</h2>
                 <p>Discover food, build a menu, or develop a recipe.</p>
               </div>
-              {user ? (
+              <motion.nav
+                className="app-menu-sheet-nav"
+                aria-label="Explore"
+                variants={staggerChildren(0.05, 0.08)}
+                initial={reduce ? false : 'hidden'}
+                animate="visible"
+              >
+                {user ? (
                 <motion.div key="user" variants={fadeUp}>
                   <NavLink to="/profile" onClick={() => setOpen(false)}>
                     Profile
@@ -199,13 +206,6 @@ export function Navbar() {
                 </motion.div>
               ) : ( null
               )}
-              <motion.nav
-                className="app-menu-sheet-nav"
-                aria-label="Explore"
-                variants={staggerChildren(0.05, 0.08)}
-                initial={reduce ? false : 'hidden'}
-                animate="visible"
-              >
                 {links.map(({ to, label, Icon }) => (
                   <motion.div key={to} variants={fadeUp}>
                     <NavLink to={to} onClick={() => setOpen(false)}>
@@ -250,3 +250,5 @@ export function Navbar() {
 }
                
                         
+             
+              
