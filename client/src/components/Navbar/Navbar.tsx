@@ -115,17 +115,12 @@ export function Navbar() {
               {ctaLabel}
             </Link>
           )}
-          {user ? (
-            <button type="button" className="app-auth-action app-desktop-auth" onClick={() => void handleLogout()}>
-              <span className="hidden sm:inline">Log out</span>
-              <span className="sm:hidden">Account</span>
-            </button>
-          ) : (
+          {!user ? (
             <Link to="/login" className="app-auth-action app-desktop-auth" onClick={() => setOpen(false)}>
-              <span className="hidden sm:inline">Log in</span>
-              <span className="sm:hidden">Account</span>
+              <LogIn size={17} aria-hidden />
+              <span>Log in</span>
             </Link>
-          )}
+          ) : null}
           {!user ? (
             <Link to="/login" className="app-mobile-login" onClick={() => setOpen(false)}>
               <LogIn size={18} aria-hidden />

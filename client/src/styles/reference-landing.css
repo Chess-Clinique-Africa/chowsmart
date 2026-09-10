@@ -731,7 +731,7 @@ html .app-mobile-menu {
   align-items: center;
   width: 46px;
   height: 46px;
-  display: none;
+  display: flex;
   cursor: pointer;
 }
 
