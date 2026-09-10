@@ -5,6 +5,7 @@ import {
   ArrowUpRight,
   ChefHat,
   Info,
+  LogIn,
   MapPin,
   Menu,
   Mic,
@@ -221,13 +222,15 @@ export function Navbar() {
                     </button>
                   </>
                 ) : (
+                  <motion.div key='login' variants={fadeUp}>
                   <NavLink to="/login" onClick={() => setOpen(false)}>
                     <span className="app-menu-sheet-link-main">
+                      <LogIn size={22} strokeWidth={1.75} aria-hidden />
                         <span>Log in</span>
                       </span>
                       <ArrowUpRight size={18} strokeWidth={1.85} aria-hidden />
-                    
                   </NavLink>
+                  </motion.div>
                 )}
               </div>
               <p className="app-menu-sheet-footer">Products and Consumers Technologies Limited</p>
