@@ -93,7 +93,7 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="app-nav-search">
+        <div className={`app-nav-search${onMenuStudio ? ' app-nav-search-menu-studio' : ''}`}>
           <SearchBar placeholder="Search restaurants, menus, recipes..." />
         </div>
 

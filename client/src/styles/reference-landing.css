@@ -606,6 +606,10 @@ html .app-nav-search {
   margin-left: auto;
 }
 
+html .app-nav-search-menu-studio {
+  width: min(190px, 18vw);
+}
+
 html .app-nav-search input {
   min-height: 42px;
   border-radius: 999px;
