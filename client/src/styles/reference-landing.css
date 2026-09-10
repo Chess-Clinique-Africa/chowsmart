@@ -829,6 +829,12 @@ html .app-skip:focus {
   gap: 4px;
 }
 
+@media (width >= 801px) {
+  .app-menu-sheet-primary {
+    display: none;
+  }
+}
+
 .app-menu-sheet-nav a {
   color: #24352f;
   text-decoration: none;

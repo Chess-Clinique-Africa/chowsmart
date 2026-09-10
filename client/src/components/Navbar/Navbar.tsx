@@ -226,7 +226,7 @@ export function Navbar() {
                 )}
 
                 {links.map(({ to, label, Icon }) => (
-                  <motion.div key={to} variants={fadeUp}>
+                  <motion.div key={to} className="app-menu-sheet-primary" variants={fadeUp}>
                     <NavLink to={to} onClick={() => setOpen(false)}>
                       <span className="app-menu-sheet-link-main">
                         <Icon size={22} strokeWidth={1.75} aria-hidden />
