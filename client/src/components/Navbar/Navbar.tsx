@@ -2,14 +2,18 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
+  AnvilIcon,
   ArrowUpRight,
   ChefHat,
+  Heart,
   Info,
   LogIn,
   MapPin,
   Menu,
   Mic,
+  ShieldCheck,
   Sparkles,
+  UserRound,
   Wheat,
   X,
   type LucideIcon,
@@ -190,22 +194,35 @@ export function Navbar() {
                 animate="visible"
               >
                 {user ? (
-                <motion.div key="user" variants={fadeUp}>
-                  <NavLink to="/profile" onClick={() => setOpen(false)}>
-                    Profile
-                  </NavLink>
-                  <NavLink to="/favorites" onClick={() => setOpen(false)}>
-                    Favorites
-                  </NavLink>
-                  {isAdmin ? (
-                    <NavLink to="/admin" onClick={() => setOpen(false)}>
-                      Admin
+                  <motion.div key="user" variants={fadeUp}>
+                    <NavLink to="/profile" onClick={() => setOpen(false)}>
+                      <span className="app-menu-sheet-link-main">
+                        <UserRound size={22} strokeWidth={1.75} aria-hidden />
+                        <span>Profile</span>
+                      </span>
+                      <ArrowUpRight size={18} strokeWidth={1.85} aria-hidden />
                     </NavLink>
-                  ) : null}
-                 
-                </motion.div>
-              ) : ( null
-              )}
+
+                    <NavLink to="/favorites" onClick={() => setOpen(false)}>
+                      <span className="app-menu-sheet-link-main">
+                        <Heart size={22} strokeWidth={1.75} aria-hidden />
+                        <span>Favorites</span>
+                      </span>
+                      <ArrowUpRight size={18} strokeWidth={1.85} aria-hidden />
+                    </NavLink>
+                    {isAdmin ? (
+                      <NavLink to="/admin" onClick={() => setOpen(false)}>
+                        <span className="app-menu-sheet-link-main">
+                          <ShieldCheck size={22} strokeWidth={1.75} aria-hidden />
+                          <span>Admin</span>
+                        </span>
+                        <ArrowUpRight size={18} strokeWidth={1.85} aria-hidden />
+                      </NavLink>
+                    ) : null}
+                  </motion.div>
+                ) : (null
+                )}
+
                 {links.map(({ to, label, Icon }) => (
                   <motion.div key={to} variants={fadeUp}>
                     <NavLink to={to} onClick={() => setOpen(false)}>
@@ -218,7 +235,6 @@ export function Navbar() {
                   </motion.div>
                 ))}
               </motion.nav>
-
               <div className="app-menu-sheet-nav">
                 {user ? (
                   <>
@@ -228,13 +244,13 @@ export function Navbar() {
                   </>
                 ) : (
                   <motion.div key='login' variants={fadeUp}>
-                  <NavLink to="/login" onClick={() => setOpen(false)}>
-                    <span className="app-menu-sheet-link-main">
-                      <LogIn size={22} strokeWidth={1.75} aria-hidden />
+                    <NavLink to="/login" onClick={() => setOpen(false)}>
+                      <span className="app-menu-sheet-link-main">
+                        <LogIn size={22} strokeWidth={1.75} aria-hidden />
                         <span>Log in</span>
                       </span>
                       <ArrowUpRight size={18} strokeWidth={1.85} aria-hidden />
-                  </NavLink>
+                    </NavLink>
                   </motion.div>
                 )}
               </div>
@@ -245,10 +261,13 @@ export function Navbar() {
       </AnimatePresence>
 
     </>
-                    
+
   );
 }
-               
-                        
-             
-              
+
+
+
+
+
+
+
