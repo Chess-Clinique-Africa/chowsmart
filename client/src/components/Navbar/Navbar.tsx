@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
-  AnvilIcon,
+  LogOut,
   ArrowUpRight,
   ChefHat,
   Heart,
@@ -116,25 +116,32 @@ export function Navbar() {
             </Link>
           )}
           {user ? (
-            <button type="button" className="app-auth-action" onClick={() => void handleLogout()}>
+            <button type="button" className="app-auth-action app-desktop-auth" onClick={() => void handleLogout()}>
               <span className="hidden sm:inline">Log out</span>
               <span className="sm:hidden">Account</span>
             </button>
           ) : (
-            <Link to="/login" className="app-auth-action" onClick={() => setOpen(false)}>
+            <Link to="/login" className="app-auth-action app-desktop-auth" onClick={() => setOpen(false)}>
               <span className="hidden sm:inline">Log in</span>
               <span className="sm:hidden">Account</span>
             </Link>
           )}
-          <button
-            type="button"
-            className="app-mobile-menu"
-            aria-label="Open navigation menu"
-            aria-expanded={open}
-            onClick={() => setOpen(true)}
-          >
-            <Menu size={23} aria-hidden />
-          </button>
+          {!user ? (
+            <Link to="/login" className="app-mobile-login" onClick={() => setOpen(false)}>
+              <LogIn size={18} aria-hidden />
+              <span>Log in</span>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              className="app-mobile-menu"
+              aria-label="Open navigation menu"
+              aria-expanded={open}
+              onClick={() => setOpen(true)}
+            >
+              <Menu size={23} aria-hidden />
+            </button>
+          )}
         </div>
       </header>
 
@@ -239,7 +246,11 @@ export function Navbar() {
                 {user ? (
                   <>
                     <NavLink to="/" onClick={() => void handleLogout()}>
-                      Log out
+                      <span className="app-menu-sheet-link-main">
+                        <LogOut size={22} strokeWidth={1.75} aria-hidden />
+                        <span>Log out</span>
+                      </span>
+                      <ArrowUpRight size={18} strokeWidth={1.85} aria-hidden />
                     </NavLink>
                   </>
                 ) : (
