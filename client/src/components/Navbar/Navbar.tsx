@@ -182,7 +182,23 @@ export function Navbar() {
                 <h2>Explore ChowSmart</h2>
                 <p>Discover food, build a menu, or develop a recipe.</p>
               </div>
-
+              {user ? (
+                <motion.div key="user" variants={fadeUp}>
+                  <NavLink to="/profile" onClick={() => setOpen(false)}>
+                    Profile
+                  </NavLink>
+                  <NavLink to="/favorites" onClick={() => setOpen(false)}>
+                    Favorites
+                  </NavLink>
+                  {isAdmin ? (
+                    <NavLink to="/admin" onClick={() => setOpen(false)}>
+                      Admin
+                    </NavLink>
+                  ) : null}
+                 
+                </motion.div>
+              ) : ( null
+              )}
               <motion.nav
                 className="app-menu-sheet-nav"
                 aria-label="Explore"
@@ -206,17 +222,6 @@ export function Navbar() {
               <div className="app-menu-sheet-nav">
                 {user ? (
                   <>
-                    <NavLink to="/profile" onClick={() => setOpen(false)}>
-                      Profile
-                    </NavLink>
-                    <NavLink to="/favorites" onClick={() => setOpen(false)}>
-                      Favorites
-                    </NavLink>
-                    {isAdmin ? (
-                      <NavLink to="/admin" onClick={() => setOpen(false)}>
-                        Admin
-                      </NavLink>
-                    ) : null}
                     <NavLink to="/" onClick={() => void handleLogout()}>
                       Log out
                     </NavLink>
@@ -240,6 +245,8 @@ export function Navbar() {
       </AnimatePresence>
 
     </>
+                    
   );
 }
+               
                         
