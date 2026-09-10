@@ -43,7 +43,7 @@ export function Register() {
         className="w-full max-w-md space-y-4 rounded-3xl border border-line bg-bg-elevated p-8 shadow-soft"
       >
         <div>
-          <h1 className="font-extrabold tracking-tight text-3xl">Join ChowSmart</h1>
+          <h1 className="font-extrabold tracking-tight text-3xl text-center">Join ChowSmart</h1>
           <p className="mt-2 text-sm text-muted">Save favorites and build menus across the catalogue.</p>
         </div>
         <Input label="Name" error={errors.name?.message} {...register('name')} />

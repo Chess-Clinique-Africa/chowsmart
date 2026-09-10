@@ -222,16 +222,21 @@ export function Navbar() {
                   </>
                 ) : (
                   <NavLink to="/login" onClick={() => setOpen(false)}>
-                    Log in
+                    <span className="app-menu-sheet-link-main">
+                        <span>Log in</span>
+                      </span>
+                      <ArrowUpRight size={18} strokeWidth={1.85} aria-hidden />
+                    
                   </NavLink>
                 )}
               </div>
-
               <p className="app-menu-sheet-footer">Products and Consumers Technologies Limited</p>
             </motion.div>
           </motion.div>
         ) : null}
       </AnimatePresence>
+
     </>
   );
 }
+                        

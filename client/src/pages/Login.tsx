@@ -46,7 +46,7 @@ export function Login() {
         className="w-full max-w-md space-y-4 rounded-3xl border border-line bg-bg-elevated p-8 shadow-soft"
       >
         <div>
-          <h1 className="font-extrabold tracking-tight text-3xl">Welcome back</h1>
+          <h1 className="font-extrabold tracking-tight text-3xl text-center">Welcome back</h1>
           <p className="mt-2 text-sm text-muted">Sign in to save menus and favorites.</p>
         </div>
         <Input label="Email" type="email" error={errors.email?.message} {...register('email')} />
