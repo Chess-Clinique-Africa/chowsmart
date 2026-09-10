@@ -1,4 +1,4 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import type { ReactNode } from 'react';
 
@@ -6,7 +6,7 @@ export function ProtectedRoute({
   children,
   adminOnly = false,
 }: {
-  children: ReactNode;
+  children?: ReactNode;
   adminOnly?: boolean;
 }) {
   const { user, loading, isAdmin } = useAuth();
@@ -28,5 +28,5 @@ export function ProtectedRoute({
     return <Navigate to="/" replace />;
   }
 
-  return children;
+  return children ?? <Outlet />;
 }

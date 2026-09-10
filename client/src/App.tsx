@@ -24,43 +24,31 @@ export default function App() {
     <Routes>
       <Route element={<MainLayout />}>
         <Route index element={<Home />} />
-        <Route path="restaurants" element={<Restaurants />} />
-        <Route path="restaurants/:slug" element={<RestaurantDetails />} />
-        <Route path="breads" element={<Breads />} />
-        <Route path="breads/:slug" element={<BreadDetails />} />
-        <Route path="menu-studio" element={<MenuStudio />} />
-        <Route path="recipe-lab" element={<RecipeLab />} />
-        <Route path="recipes/:slug" element={<RecipeDetails />} />
-        <Route path="our-story" element={<OurStory />} />
-        <Route path="search" element={<Search />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-        <Route path="setup" element={<DatabaseSetup />} />
-        <Route
-          path="profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="favorites"
-          element={
-            <ProtectedRoute>
-              <Favorites />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="admin"
-          element={
-            <ProtectedRoute adminOnly>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="*" element={<NotFound />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="restaurants" element={<Restaurants />} />
+          <Route path="restaurants/:slug" element={<RestaurantDetails />} />
+          <Route path="breads" element={<Breads />} />
+          <Route path="breads/:slug" element={<BreadDetails />} />
+          <Route path="menu-studio" element={<MenuStudio />} />
+          <Route path="recipe-lab" element={<RecipeLab />} />
+          <Route path="recipes/:slug" element={<RecipeDetails />} />
+          <Route path="our-story" element={<OurStory />} />
+          <Route path="search" element={<Search />} />
+          <Route path="setup" element={<DatabaseSetup />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="favorites" element={<Favorites />} />
+          <Route
+            path="admin"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<NotFound />} />
+        </Route>
       </Route>
     </Routes>
   );
