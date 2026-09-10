@@ -203,7 +203,7 @@ export function Navbar() {
                 ))}
               </motion.nav>
 
-              <div className="app-menu-sheet-account">
+              <div className="app-menu-sheet-nav">
                 {user ? (
                   <>
                     <NavLink to="/profile" onClick={() => setOpen(false)}>
