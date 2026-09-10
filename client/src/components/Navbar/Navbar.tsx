@@ -217,9 +217,9 @@ export function Navbar() {
                         Admin
                       </NavLink>
                     ) : null}
-                    <button type="button" onClick={() => void handleLogout()}>
+                    <NavLink to="/" onClick={() => void handleLogout()}>
                       Log out
-                    </button>
+                    </NavLink>
                   </>
                 ) : (
                   <motion.div key='login' variants={fadeUp}>
